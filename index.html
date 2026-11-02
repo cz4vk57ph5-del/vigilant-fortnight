@@ -1,0 +1,1329 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0f172a">
+<title>AG Pro — SU / GIÙ</title>
+<style>
+:root{--bg:#0b1020;--panel:#0f172a;--alt:#14213a;--border:#334155;--muted:#94a3b8;--text:#e2e8f0;--blue:#2563eb;--bull:#22c5a6;--bear:#f472b6;--warn:#ffc078}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+body{padding:calc(10px + env(safe-area-inset-top,0px)) 10px calc(18px + env(safe-area-inset-bottom,0px))}
+main{max-width:620px;margin:0 auto}
+h1{font-size:20px;margin:3px 0 4px}
+.sub{font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:12px}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:13px;padding:12px;margin:10px 0}
+label{display:block;color:var(--muted);font-size:12px;margin:0 0 5px}
+input,select,button{font:inherit;color:var(--text);background:#172033;border:1px solid #475569;border-radius:8px;min-height:42px;padding:8px;width:100%;min-width:0}
+button{background:var(--blue);border-color:var(--blue);font-weight:650}
+button:disabled{opacity:.55}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.actions{display:flex;gap:8px;margin-top:10px}
+.actions>*{flex:1}
+.card{background:var(--alt);border:1px solid #263750;border-radius:11px;padding:12px;min-width:0}
+.card h2{font-size:13px;margin:0 0 6px;color:var(--muted);font-weight:650}
+.big{font-size:26px;font-weight:800;overflow-wrap:anywhere}
+.small{font-size:11px;color:var(--muted);line-height:1.5;margin-top:5px}
+.up .big{color:var(--bull)}.down .big{color:var(--bear)}
+.k{font-size:11px;color:var(--muted)}.v{font-size:16px;font-weight:700;margin-top:4px;overflow-wrap:anywhere}
+.status{font-size:12px;line-height:1.5;color:var(--muted);overflow-wrap:anywhere}
+.status.error{color:var(--warn)}
+.note{font-size:11px;color:var(--muted);line-height:1.55}
+.rows{margin-top:6px}.rows>div{display:flex;justify-content:space-between;gap:8px;font-size:12px;padding:4px 0;border-top:1px solid #263750}
+.rows span{color:var(--muted);white-space:nowrap}.rows b{font-weight:650;text-align:right;overflow-wrap:anywhere}
+.card.closer{border-color:#818cf8;box-shadow:0 0 0 1px #818cf8}
+#vals.stale .card,#vals.stale .panel,#chartPanel.stale,#indexPanel.stale,#antPanel.stale{opacity:.55}
+.ok{color:var(--bull)}.late{color:var(--warn)}.unk{color:var(--muted)}
+.cmp{font-size:14px;font-weight:650;line-height:1.45}
+.index-value{font-size:34px;font-weight:850;line-height:1.15}.index-up{color:var(--bull)}.index-down{color:var(--bear)}.index-neutral{color:var(--text)}
+.mv{font-size:20px;font-weight:800;line-height:1.3}
+.mv.su{color:var(--bull)}.mv.giu{color:var(--bear)}.mv.fermo,.mv.skip{color:var(--muted)}
+.hist{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
+.hist span{min-width:26px;text-align:center;font-size:13px;font-weight:700;padding:3px 0;border-radius:6px;background:#172033;color:var(--muted)}
+.hist .su{color:var(--bull)}.hist .giu{color:var(--bear)}
+body:not(.showAll) .extra{display:none}
+/* Due barre in primo piano */
+#barsPanel{margin:6px 0 10px;padding:12px 12px 10px;border-color:#475569;box-shadow:0 0 0 1px #1e293b,0 4px 18px rgba(0,0,0,.35)}
+#barsPanel.stale{opacity:.55}
+#barsPanel input[type=checkbox]{width:20px;min-height:20px;height:20px;flex:none;padding:0;margin:0}
+#barsPanel .bt{font-size:14px;font-weight:750;color:var(--text);line-height:1.3}
+#barsPanel .bsep{margin-top:14px;padding-top:12px;border-top:1px solid #334155}
+#barsPanel .grid3{gap:6px;margin:8px 0 10px!important}
+.slotT{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+.slotT th{font-size:11px;color:var(--muted);font-weight:600;text-align:left;padding:4px 4px;border-bottom:1px solid var(--border)}
+.slotT td{padding:5px 4px;border-bottom:1px solid rgba(51,65,85,.55);vertical-align:top;font-size:14px;font-weight:700;line-height:1.2}
+.slotT td small{display:block;font-size:10.5px;font-weight:400;color:var(--muted);margin-top:1px}
+.slotT tr.now td{background:rgba(37,99,235,.18)}
+.slotT tr.fut td{color:var(--muted);font-weight:400;opacity:.6}
+#barsPanel .grid3>div:nth-child(1){text-align:left}
+#barsPanel .grid3>div:nth-child(2){text-align:center}
+#barsPanel .grid3>div:nth-child(3){text-align:right}
+#barsPanel .k{font-size:12px;color:#cbd5e1}
+#barsPanel .v{font-size:clamp(16px,5.3vw,21px);font-weight:800;line-height:1.15;margin-top:3px;font-variant-numeric:tabular-nums;letter-spacing:-.2px}
+#barsPanel .grid3 .small{font-size:11px}
+#barsPanel .gbar{position:relative;height:18px;border-radius:9px;background:linear-gradient(90deg,var(--bear),#334155,var(--bull))}
+#barsPanel .gmark{position:absolute;top:-6px;left:50%;width:4px;height:30px;border-radius:3px;background:#fff;z-index:2;box-shadow:0 0 0 2px #0b1020,0 0 9px 2px rgba(255,255,255,.75)}
+#barsPanel .small{font-size:11.5px}
+#barsPanel #sTxt,#barsPanel #wTxt{font-size:13px;font-weight:650;color:var(--text);margin-top:10px!important}
+</style>
+</head>
+<body>
+<main>
+  <h1>AG Pro — SU / GIÙ</h1>
+  <section class="panel" id="barsPanel">
+      <div class="bblk"><div class="bt">Scarto: minimo e massimo della sessione, e ora</div>
+        <div class="grid3" style="margin:6px 0"><div><div class="k">Min (GIÙ)</div><div class="v" id="sMin">—</div><div class="small" id="sMinT" style="margin:2px 0 0"></div></div><div><div class="k">Ora</div><div class="v" id="sNow">—</div></div><div><div class="k">Max (SU)</div><div class="v" id="sMax">—</div><div class="small" id="sMaxT" style="margin:2px 0 0"></div></div></div>
+        <div class="gbar"><i id="sTrail" style="position:absolute;top:0;left:50%;width:0;height:18px;border-radius:9px;background:rgba(255,255,255,.55);display:none"></i><i id="sMark15" style="position:absolute;top:5px;left:50%;width:8px;height:8px;border-radius:50%;border:2px solid #fff;box-sizing:border-box;background:#0f172a;display:none"></i><i id="sMark" class="gmark" style="display:none"></i></div>
+        <div class="small" id="sTxt" style="margin:6px 0 0">—</div><div class="small" id="sTxt5" style="margin:2px 0 0">—</div><div class="small" id="sTxt15" style="margin:2px 0 0">—</div></div>
+      <div class="bblk bsep"><div class="bt">Scarto: ultimi <span id="wLen">30</span> minuti (finestra mobile)</div>
+        <div class="grid3" style="margin:6px 0"><div><div class="k">Min</div><div class="v" id="wMin">—</div><div class="small" id="wMinT" style="margin:2px 0 0"></div></div><div><div class="k">Ora</div><div class="v" id="wNow">—</div><div class="small" id="wNowT" style="margin:2px 0 0"></div></div><div><div class="k">Max</div><div class="v" id="wMax">—</div><div class="small" id="wMaxT" style="margin:2px 0 0"></div></div></div>
+        <div class="gbar"><i id="wMark" class="gmark" style="display:none"></i></div>
+        <div class="small" id="wTxt" style="margin:6px 0 0">—</div><div class="small" id="wCov" style="margin:2px 0 0">—</div><div class="small" id="wZone" style="margin:2px 0 0">—</div></div>
+      <div class="bblk bsep"><div class="bt">Ingresso long (giornata positiva)</div>
+        <label style="margin:8px 0 4px">Max di riferimento in pp (vuoto = max reale della sessione)</label>
+        <input type="text" inputmode="decimal" id="entMax" placeholder="es. 17">
+        <div class="grid3" style="margin:6px 0"><div><div class="k">Zona ideale</div><div class="v" id="entIdeal">—</div></div><div><div class="k">Accettabile fino a</div><div class="v" id="entOk">—</div></div><div><div class="k">Invalida sotto</div><div class="v" id="entInv">—</div></div></div>
+        <div class="small" id="entStatus" style="margin:6px 0 0">—</div>
+        <div class="small" id="entReb" style="margin:2px 0 0"></div><div class="small" id="entEx" style="margin:2px 0 0"></div><div class="small" id="entNote" style="margin:2px 0 0"></div></div>
+      <div class="bblk bsep"><div class="bt">Ingresso short (giornata negativa)</div>
+        <label style="margin:8px 0 4px">Min di riferimento in pp (vuoto = min reale della sessione)</label>
+        <input type="text" inputmode="decimal" id="shMin" placeholder="es. −17">
+        <div class="grid3" style="margin:6px 0"><div><div class="k">Zona ideale</div><div class="v" id="shIdeal">—</div></div><div><div class="k">Accettabile fino a</div><div class="v" id="shOk">—</div></div><div><div class="k">Invalida sopra</div><div class="v" id="shInv">—</div></div></div>
+        <div class="small" id="shStatus" style="margin:6px 0 0">—</div>
+        <div class="small" id="shReb" style="margin:2px 0 0"></div><div class="small" id="shEx" style="margin:2px 0 0"></div><div class="small" id="shNote" style="margin:2px 0 0"></div></div>
+      <label style="display:flex;gap:8px;align-items:center;margin:10px 0 0;font-size:12px"><input type="checkbox" id="showAll"> Mostra anche il resto (indice, dettagli, grafici)</label>
+  </section>
+  <div class="sub extra">Distanza, in punti di prezzo (pp), dalle soglie del Pace ±0,40. È una misura matematica: non è una probabilità né un segnale di acquisto o vendita.</div>
+
+  <section class="panel" id="antPanel">
+    <h2 style="font-size:14px;margin:0 0 8px">ANTICIPAZIONE PREZZO</h2>
+    <div class="grid">
+      <div><div class="k">Semaforo predittivo</div><div class="mv fermo" id="antLight">—</div></div>
+      <div><div class="k">Punteggio predittivo (−100 / +100)</div><div class="index-value index-neutral" id="antScore">—</div></div>
+    </div>
+    <div class="small" id="antWhy"></div>
+    <div class="small status error" id="antStale"></div>
+    <div class="rows">
+<div><span>Segnale precedente / in discussione</span><b id="antOld">—</b></div><div><span>Nuova direzione in verifica</span><b id="antNew">—</b></div>
+    </div>
+    <div class="k" style="margin-top:10px"><b>1 · Scarto attuale (GIÙ − SU) e 2 · velocità</b></div>
+    <div class="rows">
+<div><span>Scarto attuale</span><b id="antGap">—</b></div>
+<div><span>Direzione favorita · entità</span><b id="antFav">—</b></div>
+<div><span>Velocità 30 s · anticipazione rapida</span><b id="antV30">—</b></div>
+<div><span>Velocità 1 min · conferma</span><b id="antV60">—</b></div>
+<div><span>Velocità 3 min · direzione prevalente</span><b id="antV180">—</b></div>
+    </div>
+    <div class="extra">
+    <div class="k" style="margin-top:10px"><b>3 · Accelerazione dello scarto (non del prezzo)</b></div>
+    <div class="rows">
+<div><span>Accelerazione · 30 s</span><b id="antA30">—</b></div>
+<div><span>Accelerazione · 1 min</span><b id="antA60">—</b></div>
+<div><span>Accelerazione · 3 min</span><b id="antA180">—</b></div>
+    </div>
+    <div class="k" style="margin-top:10px"><b>5 · Conferma MACD · 6 · Conferma del prezzo</b></div>
+    <div class="rows">
+<div><span>MACD (già calcolato sopra)</span><b id="antMacd">—</b></div>
+<div><span>Pendenza del MACD (come calcolata)</span><b id="antMacdS">—</b></div>
+<div><span>Prezzo</span><b id="antPxC">—</b></div>
+<div><span>Variazione del prezzo</span><b id="antPxD">—</b></div>
+    </div>
+    <div class="k" style="margin-top:10px"><b>8 · Contributo di ogni componente al punteggio</b></div>
+    <div class="rows">
+<div><span>Posizione dello scarto</span><b id="antCpos">—</b></div>
+<div><span>Velocità</span><b id="antCvel">—</b></div>
+<div><span>Accelerazione</span><b id="antCacc">—</b></div>
+<div><span>Concordanza MACD</span><b id="antCmacd">—</b></div>
+<div><span>Conferma del prezzo</span><b id="antCpx">—</b></div>
+    </div>
+    <div class="k" style="margin-top:10px"><b>9 · Verifica dei preallarmi</b> (selezione corrente)</div>
+    <div class="rows" id="antStats"></div>
+    <div class="k" style="margin-top:8px">Ultimi preallarmi (esito dopo 5 · 10 · 15 min, in pp nella direzione prevista)</div>
+    <div class="rows" id="antList"></div>
+    <div class="k" style="margin-top:8px">Cronologia dei segnali confermati (salvata su questo dispositivo)</div>
+    <div class="rows" id="antSigList"></div>
+    <div class="actions"><button id="antReset" type="button">Cancella storico previsioni</button></div>
+    <div class="small">Lo scarto è quello originale (distanza GIÙ − distanza SU, formule non modificate). <b>Dati:</b> un campione per ogni quotazione NUOVA di Yahoo, con l'orario dell'ultima quotazione (non quello della richiesta HTTP), a mercato aperto e solo se la quotazione ha al massimo 60 s. Una richiesta riuscita con quotazione ferma o vecchia non genera campioni né segnali e azzera l'eventuale preallarme; nessun campione è inventato o interpolato. <b>Finestre</b> 30 s / 1 min / 3 min: il campione di riferimento deve cadere entro ±6 s / ±12 s / ±36 s dall'istante richiesto, altrimenti la finestra è NON DISPONIBILE (mai una misura su un tempo diverso); si confrontano solo campioni della stessa candela. <b>Velocità</b> V = Δscarto / Δt (pt/min). <b>Accelerazione</b> A = (V₁ − V₂) / Δt tra i centri dei due intervalli (pt/min²): V₁ sull'intervallo più recente, V₂ su quello precedente della stessa durata, distinti e non sovrapposti; è l'accelerazione dello scarto, non del prezzo. <b>Rumore:</b> soglia dello scarto = k × deviazione standard attesa (euristica: σ prezzo a 5 min ≈ 0,75 ATR, scala con √tempo, scarto ≈ 2× prezzo; k 0,5 / 0,69 / 1,0 dalla «Sensibilità del movimento»), non calibrata su dati reali; soglia di V = soglia scarto / Δt; soglia di A = √(σV₁² + σV₂²) / Δt tra i centri. <b>Limite strutturale:</b> a candela invariata lo scarto è una trasformazione lineare del prezzo (≈ 2×), quindi velocità, accelerazione e prezzo derivano dalla stessa serie. Per questo il prezzo pesa solo 5% (20% soltanto se la velocità dello scarto non è disponibile e il prezzo è l'unica misura del movimento) e serve soprattutto da controllo: un prezzo contrario blocca il preallarme. Pesi: posizione 25%, velocità 30%, accelerazione 20%, MACD 20%, prezzo 5%; se una componente manca i pesi si ridistribuiscono. Il punteggio (−100/+100, componenti normalizzate con tanh) è un indice descrittivo, non una probabilità di rialzo o ribasso. MACD: quello già presente, nessun ricalcolo; concordante se l'istogramma ha il segno della direzione e non si muove contro, oppure si muove verso di essa. <b>PREALLARME</b> = velocità 30 s e 1 min concordi oltre il rumore + accelerazione non contraria oltre il suo rumore + MACD concorde + punteggio ≥ 25 in valore assoluto + prezzo (1 min) non contrario, confermato da 2 campioni nuovi consecutivi. <b>INVERSIONE IN FORMAZIONE</b> = scarto da −3 a −1 min in una direzione, 30 s e 1 min nell'opposta, prezzo a 3 min non ancora rovesciato. <b>Verifica:</b> ogni preallarme (stessa direzione al massimo ogni 2 min) è registrato con prezzo e ATR del momento e non viene mai modificato; l'esito è il primo campione attuale dopo 5, 10 e 15 minuti (entro 90 s dalla scadenza, altrimenti «n.d.»). Il segnale usa solo campioni fino a quel momento (nessun look-ahead). «Corretto» = movimento a favore oltre 0,05 ATR; «piatto» = entro ±0,05 ATR (non conta come corretto); medie favorevole/contrario calcolate solo sugli esiti rispettivi. Condizioni di mercato: volatilità (rango dell'ATR tra le ultime 100 barre: bassa &lt; 33°, alta &gt; 66° percentile) e Pace concorde/contrario. <b>Cronologia dei segnali:</b> ogni segnale confermato (preallarme o inversione) è salvato su questo dispositivo con direzione, orario di inizio, orario di fine (conferma della cessazione), motivo della cessazione e stato eventualmente subentrato. Alla riapertura o all'aggiornamento della pagina nessun segnale è attivo: quelli rimasti aperti sono mostrati come CONCLUSO · interrotto, con fine all'ultimo campione valido e il precedente resta visibile come «concluso», mai come attivo. Il pulsante «Cancella storico previsioni» non cancella questa cronologia. <b>Pendenza del MACD:</b> confronto tra l'istogramma della barra corrente (in formazione, aggiornata a ogni quotazione) e quello della barra precedente (chiusa), con tolleranza di 1e-9. <b>Segnale in discussione:</b> se le condizioni di un preallarme già confermato smettono di valere, il semaforo lo mostra «IN DISCUSSIONE» (non più pienamente confermato), indica la nuova direzione in verifica con il conteggio dei campioni nuovi (2 consecutivi per cambiare stato) e conserva il segnale precedente con orari di inizio e fine. <b>MACD:</b> quattro stati — positivo e in aumento; positivo ma in diminuzione e negativo ma in aumento (evidenziati: il MACD perde forza pur mantenendo il segno precedente); negativo e in diminuzione; la pendenza è quella già calcolata dall'indice (barra corrente contro precedente). <b>Statistiche</b> per SU e GIÙ a 5, 10 e 15 min: corretti (oltre +0,05 ATR a favore), contrari (oltre 0,05 ATR contro), piatti (entro ±0,05 ATR), non verificabili (nessun campione attuale entro 90 s dalla scadenza) e in attesa (scadenza non ancora raggiunta). Lo storico è salvato su questo dispositivo (localStorage) e non è una prova di profittabilità.</div>
+    </div>
+  </section>
+
+  <section class="panel extra" id="indexPanel">
+    <h2 style="font-size:14px;margin:0 0 8px">Indice combinato Pace + MACD</h2>
+    <div class="grid3">
+      <div><div class="k">Indice (−100 / +100)</div><div class="index-value" id="comboIndex">—</div></div>
+      <div><div class="k">Variazione indice</div><div class="v" id="comboDelta">—</div></div>
+      <div><div class="k">Lettura</div><div class="v" id="comboMeaning">—</div></div>
+    </div>
+    <div class="rows">
+      <div><span>Spinta verso SU (1–100, descrittiva)</span><b id="comboPush">—</b></div>
+      <div><span>Componente Pace normalizzata</span><b id="paceComponent">—</b></div>
+      <div><span>Componente MACD istogramma normalizzata</span><b id="macdComponent">—</b></div>
+      <div><span>Direzione · intensità (indice netto)</span><b id="comboDir">—</b></div>
+      <div><span>Pace / MACD: concordanza</span><b id="comboDisc">—</b></div>
+      <div><span>Variazione · stessa candela (omogenea)</span><b id="comboCmp">—</b></div>
+      <div><span>Variazione · candela precedente ⚠ non omogenea</span><b id="comboCmp2">—</b></div>
+      <div><span>Stato indice</span><b id="comboState">—</b></div>
+    </div>
+    <div class="small status error" id="comboStale"></div>
+    <div class="small">Indice direzionale descrittivo, non probabilità di guadagno. Pace e istogramma MACD sono confrontati con la distribuzione recente dei rispettivi valori assoluti validi (finestra fino a 100 barre, minimo 30 valori validi per ciascuno, tutti successivi a 100 barre di riscaldamento: EMA e ATR hanno memoria del seme iniziale) e combinati al 50% ciascuno. Il segno indica la direzione; l'intensità indica quanto il valore è elevato rispetto alla propria storia recente. Rango percentile a metà rango (i pareggi contano per metà; 0 resta 0), quindi mai ±100 esatti. Se Pace e MACD hanno segno opposto compare «DISCORDANZA»: l'indice netto segue la componente numericamente più forte, ma la lettura è mista. Se il confronto con la misurazione precedente è su una candela diversa, la finestra di 10 barre è scorsa e la variazione non è una variazione pura dell'indicatore. La spinta (1–100) è l'indice riportato su quella scala: 50 = neutra, verso 100 = più verso SU, verso 1 = più verso GIÙ.</div>
+  </section>
+
+  <div id="vals">
+    <section class="grid">
+      <div class="card up" id="cardUp"><h2>SU · Pace ≥ +0,40</h2><div class="big" id="upDist">—</div>
+        <div class="rows"><div><span>% del prezzo</span><b id="upPct">—</b></div><div><span>Livello stimato</span><b id="upLvl">—</b></div><div><span>Soglia</span><b id="upState">—</b></div><div><span>Barre sopra</span><b id="upHold">—</b></div></div></div>
+      <div class="card down" id="cardDn"><h2>GIÙ · Pace ≤ −0,40</h2><div class="big" id="dnDist">—</div>
+        <div class="rows"><div><span>% del prezzo</span><b id="dnPct">—</b></div><div><span>Livello stimato</span><b id="dnLvl">—</b></div><div><span>Soglia</span><b id="dnState">—</b></div><div><span>Barre sotto</span><b id="dnHold">—</b></div></div></div>
+    </section>
+
+    <section class="panel">
+      <div class="cmp" id="cmpText">—</div>
+      <div class="small">Confronto di distanze matematiche: la soglia più vicina non è la direzione più probabile del prezzo.</div>
+    </section>
+
+
+    <section class="panel">
+      <div class="k" id="mvWhen">Movimento dall'ultimo aggiornamento</div>
+      <div class="mv fermo" id="mvVerdict">—</div>
+      <div class="rows">
+        <div><span>SU (distanza)</span><b id="mvUp">—</b></div>
+        <div><span>GIÙ (distanza)</span><b id="mvDn">—</b></div>
+        <div><span>Scarto GIÙ − SU</span><b id="mvGap">—</b></div>
+        <div><span>Serie consecutiva</span><b id="mvStreak">—</b></div>
+        <div><span>Ultimi 6 giri</span><b id="mvSum">—</b></div>
+      </div>
+      <div class="hist" id="mvHist"></div>
+      <div class="small">▲ verso SU · ▼ verso GIÙ · = fermo · ┆ cambio candela (confronto non omogeneo, escluso dal verdetto). Scarto positivo = SU più vicino.</div>
+    </section>
+
+    <section class="panel">
+      <div class="grid3">
+        <div><div class="k">Prezzo</div><div class="v" id="price">—</div></div>
+        <div><div class="k">Pace (media 3 barre)</div><div class="v" id="pace">—</div></div>
+        <div><div class="k">ATR 14</div><div class="v" id="atr">—</div></div>
+      </div>
+      <div class="rows">
+        <div><span>A · Pace algebrico</span><b id="pAlg">—</b></div>
+        <div><span>B · Intensità |Pace|</span><b id="pAbs">—</b></div>
+        <div><span>Variazione dall'ultimo aggiornamento</span><b id="dRef">—</b></div>
+      </div>
+      <div class="small">Pace in aumento significa valore algebrico più alto, non rialzo del prezzo: può anche salire in intensità diventando più negativo (guarda |Pace|).</div>
+    </section>
+  </div>
+
+  <section class="panel" id="slotPanel">
+    <div class="k"><b>Scarto GIÙ − SU: min e max ogni mezz'ora (ora italiana, in pp)</b></div>
+    <table class="slotT"><thead><tr><th>Fascia</th><th>Prezzo</th><th>Min</th><th>Max</th></tr></thead><tbody id="slotBody"></tbody></table>
+    <div class="small" id="slotNote">—</div>
+  </section>
+
+  <section class="panel" id="chartPanel">
+      <div class="extra">
+      <div class="grid3" style="margin-bottom:8px">
+        <div><div class="k">Scarto GIÙ − SU</div><div class="v" id="cGap">—</div></div>
+        <div><div class="k">SU manca</div><div class="v" id="cUp">—</div></div>
+        <div><div class="k">GIÙ manca</div><div class="v" id="cDn">—</div></div>
+      </div>
+      <div class="k" style="margin:4px 0 6px"><b>Minuto per minuto</b> <span id="mgTag" class="small"></span></div>
+      <div class="grid3" style="margin-bottom:8px">
+        <div><div class="k">Max scarto SU · sessione</div><div class="v" id="cMaxUp">—</div><div class="small" id="cMaxUpT" style="margin:0"></div></div>
+        <div><div class="k">Max scarto GIÙ · sessione</div><div class="v" id="cMaxDn">—</div><div class="small" id="cMaxDnT" style="margin:0"></div></div>
+        <div></div>
+      </div>
+      <div class="grid3" style="margin-bottom:8px">
+        <div><div class="k">Min scarto SU · sessione</div><div class="v" id="cMinUp">—</div><div class="small" id="cMinUpT" style="margin:0"></div></div>
+        <div><div class="k">Min scarto GIÙ · sessione</div><div class="v" id="cMinDn">—</div><div class="small" id="cMinDnT" style="margin:0"></div></div>
+        <div></div>
+      </div>
+      <div class="k" style="margin:10px 0 6px"><b>A chiusura barra (come prima)</b></div>
+      <div class="grid3" style="margin-bottom:8px">
+        <div><div class="k">Max scarto SU · sessione</div><div class="v" id="bMaxUp">—</div><div class="small" id="bMaxUpT" style="margin:0"></div></div>
+        <div><div class="k">Max scarto GIÙ · sessione</div><div class="v" id="bMaxDn">—</div><div class="small" id="bMaxDnT" style="margin:0"></div></div>
+        <div></div>
+      </div>
+      <div class="grid3" style="margin-bottom:8px">
+        <div><div class="k">Min scarto SU · sessione</div><div class="v" id="bMinUp">—</div><div class="small" id="bMinUpT" style="margin:0"></div></div>
+        <div><div class="k">Min scarto GIÙ · sessione</div><div class="v" id="bMinDn">—</div><div class="small" id="bMinDnT" style="margin:0"></div></div>
+        <div></div>
+      </div>
+      <div class="grid3" style="margin-bottom:8px">
+        <div><div class="k">Serie in corso (minuto per minuto)</div><div class="v" id="cRun">—</div><div class="small" id="cRunT" style="margin:0"></div></div>
+        <div><div class="k">Max scarto serie</div><div class="v" id="cRunMax">—</div><div class="small" id="cRunMaxT" style="margin:0"></div></div>
+        <div><div class="k">Min scarto serie</div><div class="v" id="cRunMin">—</div><div class="small" id="cRunMinT" style="margin:0"></div></div>
+      </div>
+      </div>
+      <div class="rows" style="margin:0 0 10px">
+        <div class="extra"><span>Soglia più vicina</span><b id="cNear">—</b></div>
+        <div class="extra"><span>Movimento</span><b id="cMove">—</b></div>
+        <div><span>Aggiornato</span><b id="cUpd">—</b></div>
+      </div>
+      <div class="extra">
+      <div class="rows" style="margin:0 0 6px"><div><span id="nqName">Nasdaq-100 (^NDX) · 5 min · oggi</span><b id="nqInfo">—</b></div></div>
+      <canvas id="nqChart" style="width:100%;height:90px;display:block;margin-bottom:8px" role="img" aria-label="Mini grafico Nasdaq-100 di oggi"></canvas>
+      <div class="small" id="chartTf" style="margin:0 0 6px"></div>
+      <canvas id="chart" style="width:100%;height:300px;display:block" role="img" aria-label="Grafico unico a 5 minuti: Pace con soglie e MACD con incroci"></canvas>
+      <div class="small">Grafico unico a 5 minuti, dalle 08:15 (ora italiana) all'ultima barra; se il mercato non ha barre a quell'ora, parte dalla prima disponibile. Pace mediato a 3 barre a sinistra con le soglie ±0,40 (zone colorate oltre soglia); MACD 12·26·9 a destra, con signal a media semplice e istogramma a 4 colori. Le due scale hanno lo zero in comune ma unità diverse: confronta i tempi e gli incroci, non le altezze. I punti sono gli incroci MACD/signal: verde = MACD sopra il signal dopo l'incrocio, rosso = sotto. Il grafico resta a 5 minuti anche se scegli un altro timeframe per i valori sopra. <em>Due versioni</em>: «Minuto per minuto» (sotto) e «A chiusura barra (come prima)», calcolata solo alla chiusura di ogni barra del timeframe più il valore corrente a ogni aggiornamento. <em>Max scarto di sessione</em>: il valore più alto (SU) e più basso (GIÙ) raggiunto dallo scarto GIÙ − SU nella sessione regolare corrente, calcolato minuto dopo minuto (a ogni minuto completo, con la barra del timeframe scelto ricostruita fino a quel minuto; gli orari sono quelli del minuto). Se i dati al minuto non sono disponibili si ripiega sulla chiusura di ogni barra più un campione del valore corrente ogni minuto; gli orari sono italiani. <em>Min scarto</em>: il valore più piccolo (più vicino a zero) dello scarto dal lato SU e dal lato GIÙ, cioè i momenti in cui le due soglie erano più vicine. <em>Serie in corso</em>: da quando lo scarto ha l'ultimo colore (verde = positivo, rosso = negativo); max e min sono lo scarto di valore assoluto più alto e più basso da quel cambio, e ripartono a ogni cambio di colore. Si azzera a ogni nuova sessione o cambio di simbolo/timeframe.</div>
+      </div>
+    </section>
+
+  <section class="panel extra">
+    <div class="grid3">
+      <div><label for="symbol">Simbolo Yahoo</label><input id="symbol" value="QQQ" spellcheck="false" autocomplete="off" autocapitalize="characters"></div>
+      <div><label for="interval">Timeframe</label><select id="interval"><option value="1m">1 minuto</option><option value="5m" selected>5 minuti</option><option value="15m">15 minuti</option><option value="30m">30 minuti</option><option value="60m">1 ora</option><option value="1d">1 giorno</option></select></div>
+      <div><label for="refresh">Aggiorna</label><select id="refresh"><option value="10" selected>10 s</option><option value="30">30 s</option><option value="60">60 s</option><option value="0">Manuale</option></select></div>
+    </div>
+    <div class="grid" style="margin-top:10px"><div><label for="tol">Tolleranza andamento Pace</label><select id="tol"><option value="0.005">±0,005</option><option value="0.02" selected>±0,02</option><option value="0.05">±0,05</option></select></div><div><label for="mvTol">Sensibilità del movimento (in ATR)</label><select id="mvTol"><option value="0.02" selected>±0,02 ATR (alta)</option><option value="0.05">±0,05 ATR</option><option value="0.10">±0,10 ATR (bassa)</option></select></div></div>
+    <div class="actions"><button id="load">Carica dati</button><button id="stop" type="button">Ferma</button></div>
+  </section>
+
+  <section class="panel">
+    <h2 style="font-size:14px;margin:0 0 8px">Stato dati</h2>
+    <div class="rows" style="margin-top:0">
+      <div><span>Stato</span><b id="dKind">—</b></div>
+      <div><span>Ultima candela, apertura (ora italiana)</span><b id="dLast">—</b></div>
+      <div><span>Trascorso dalla sua apertura</span><b id="dAge">—</b></div>
+      <div><span>Attualità dei dati</span><b id="dState">—</b></div>
+      <div><span>Ultimo aggiornamento riuscito (ora italiana)</span><b id="dLoad">—</b></div>
+      <div><span>Barre: Pace / indice</span><b id="dBars">—</b></div>
+      <div><span>Storico minuto per minuto</span><b id="dMg">—</b></div>
+      <div><span>Storia richiesta</span><b id="dSrc">—</b></div>
+    </div>
+    <div class="small" id="dKindWhy"></div>
+    <div class="status error" id="dWarn"></div>
+  </section>
+
+
+  <div id="status" class="status">Caricamento dei dati all’apertura…</div>
+  <section class="panel note">
+    <strong>Come si legge:</strong> 1 pp = 1 punto di prezzo (per QQQ, 1 dollaro). Pace = (chiusura − chiusura di 10 barre prima) / (ATR14 × 10), mediato su 3 barre. «Manca X pp» è quanto dovrebbe spostarsi la chiusura della barra in corso perché la media a 3 barre del pace arrivi a ±0,40, con l'<em>ATR tenuto fisso al valore attuale</em> (stima originale): se l'ATR cambia, la distanza reale può variare, e oltre 3 ATR la stima è poco precisa. Movimento: a ogni aggiornamento confronta le distanze con quelle dell'aggiornamento precedente; se lo scarto GIÙ − SU cresce oltre la sensibilità scelta il prezzo va verso SU, se cala va verso GIÙ, altrimenti è fermo. Con candela diversa il giro non è confrontabile. «Raggiunta» = soglia già superata; le barre consecutive oltre la soglia ne richiedono 3. Due distanze sono «equivalenti» se differiscono meno di 0,05 ATR. Stato dei dati: <em>nuova candela</em> = timestamp successivo; <em>candela aggiornata</em> = stesso timestamp ma valori cambiati; <em>dati invariati</em> = stesso timestamp e stessi valori (può essere normale); <em>dati ritardati</em> = oltre 2 barre senza candela a mercato aperto (o sessione non conclusa a mercato chiuso); <em>risposta obsoleta</em> = Yahoo ha restituito una candela più vecchia di quella già mostrata; <em>errore di caricamento</em> = ultima richiesta fallita. Una richiesta riuscita non basta a dire che il prezzo sia aggiornato. La tenuta conta solo barre con Pace mediato calcolato con ATR 14 completo; con dati insufficienti mostra «TENUTA NON VERIFICABILE». <em>Limiti delle stime «manca X pp»</em>: l'ATR è tenuto fisso, ma in realtà cambia con la barra in corso (il True Range dipende da massimo, minimo e chiusura precedente); la barra in corso è incompleta e può ancora cambiare; il livello stimato è una soglia matematica, non un obiettivo di prezzo. <em>Storia scaricata e riscaldamento</em>: EMA e ATR partono da un seme e lo «dimenticano» in modo esponenziale (EMA 26 ×0,926 a barra, ATR di Wilder ×0,929). In una simulazione su 840 serie casuali con trend fino a ±0,3 ATR per barra, l'errore dell'istogramma MACD rispetto a una storia molto lunga, in unità di ATR, è: 60 barre p95 2,8% (max 5,6%); 85 barre p95 0,46% (max 0,99%); 100 barre p95 0,13% (max 0,25%). Per questo l'indice richiede 100 barre di riscaldamento più 30 campioni validi (130 barre). L'errore relativo dell'ATR a 60 barre è p95 0,5% (max 1,9%). Sono risultati di una simulazione su serie casuali, non prestazioni su dati di mercato reali e non una garanzia di accuratezza futura: l'errore reale può differire. Il Pace è calcolabile da 27 barre (14 ATR + 10 lookback + 3 di media), ma sotto 60 barre l'ATR è ancora in assestamento. Per giornaliero e orario si chiede prima più storia (1 anno, 3 mesi) e, se non disponibile, quella standard. Il grafico è sempre a 5 minuti e può differire dal timeframe dell'indice. Nessuna prova statistica di profittabilità.
+  </section>
+  <div class="note" style="text-align:center;margin-top:8px">AG Pro — SU / GIÙ · versione <span id="ver"></span></div>
+</main>
+<script>
+'use strict';
+const PROXY='https://yahooproxy.b864v27974.workers.dev';
+const VERSION='20261030-ant4';
+const HISTMAX=30,HISTSTORE=1000,SUMN=6; // HISTMAX = simboli mostrati, HISTSTORE = giri conservati (sessione intera)
+const LOOKBACK=10,ATRLEN=14,SMLEN=3,THR=0.40,HOLD=3,MINBARS=ATRLEN+LOOKBACK+SMLEN;
+const RANGE={'1m':'5d','5m':'5d','15m':'5d','30m':'1mo','60m':'1mo','1d':'6mo'};
+const RANGE_ALT={'1d':'1y','60m':'3mo'}; // storia più lunga per il riscaldamento; se Yahoo/Worker la rifiuta si ripiega su RANGE
+const STEP={'1m':60,'5m':300,'15m':900,'30m':1800,'60m':3600,'1d':86400};
+const $=id=>document.getElementById(id);
+let mgCache=null,runAcc=null,sessAcc=null,controller=null,timer=null,stopped=false,lastGood=null,failed=null,prevMeas=null,idxHist=null,olderNote=null,started=false,busy=false,needsReload=false;
+
+const fmt=(v,d=2)=>Number.isFinite(v)?v.toLocaleString('it-IT',{minimumFractionDigits:d,maximumFractionDigits:d}):'—';
+const hms=ms=>new Date(ms).toLocaleTimeString('it-IT',{timeZone:'Europe/Rome'});
+const hmsDay=ms=>new Date(ms).toLocaleString('it-IT',{timeZone:'Europe/Rome',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit'});
+
+// ---------- dati Yahoo (stesso Worker, tre metodi di richiesta) ----------
+function parseYahoo(data){
+  const r=data?.chart?.result?.[0]||data?.result?.[0]||data;
+  const q=r?.indicators?.quote?.[0],ts=r?.timestamp;
+  if(!q||!ts)throw new Error(data?.chart?.error?.description||'Formato Yahoo non riconosciuto');
+  const out=[];
+  for(let i=0;i<ts.length;i++){
+    if(![ts[i],q.open?.[i],q.high?.[i],q.low?.[i],q.close?.[i]].every(Number.isFinite))continue; // barre vuote: scartate, mai inventate
+    if(q.high[i]<q.low[i])continue;
+    out.push({time:ts[i]*1000,open:q.open[i],high:q.high[i],low:q.low[i],close:q.close[i]});
+  }
+  out.sort((a,b)=>a.time-b.time);
+  const bars=out.filter((b,i)=>!i||b.time!==out[i-1].time);
+  const reg=r?.meta?.currentTradingPeriod?.regular;
+  bars.reg=Number.isFinite(reg?.start)&&Number.isFinite(reg?.end)?{start:reg.start*1000,end:reg.end*1000}:null;
+  // la «sessione» dei dati registrati parte dalla prima barra di oggi (pre-market: per QQQ le 4:00 ET = 9:00 italiane), non dalle 15:30 della sessione regolare.
+  // Si risale dall'ultima barra finché le barre sono contigue (buchi > 90 min = notte/pausa): se quel blocco inizia fino a 6 h prima dell'apertura regolare, diventa l'inizio.
+  bars.regReg=bars.reg;
+  if(bars.reg&&bars.length>1){let k=bars.length-1;while(k>0&&bars[k].time-bars[k-1].time<=5400000)k--;
+    const t0=bars[k].time;
+    if(t0<bars.reg.start&&t0>=bars.reg.start-21600000)bars.reg={start:t0,end:Math.max(bars.reg.end,t0+57600000)}}
+  bars.dups=out.length-bars.length;
+  bars.qt=Number.isFinite(r?.meta?.regularMarketTime)?r.meta.regularMarketTime*1000:null; // orario dell'ultima quotazione dichiarato da Yahoo
+  return bars;
+}
+let lastMb=null;const WIN_MIN=30,ZONE_MIN=60; // finestra mobile della seconda barra (minuti)
+const NQSYM='^NDX';
+async function fetchSpark(signal,sym){ // mini grafico: nessun minimo di barre, stessi percorsi del Worker
+  const path='/v8/finance/chart/'+encodeURIComponent(sym)+'?interval=5m&range=1d';
+  const urls=[PROXY+path,PROXY+'/?url='+encodeURIComponent('https://query1.finance.yahoo.com'+path)];let err;
+  for(const url of urls){const ac=new AbortController(),to=setTimeout(()=>ac.abort(),12000),ab=()=>ac.abort();signal.addEventListener('abort',ab,{once:true});
+    try{const res=await fetch(url,{cache:'no-store',signal:ac.signal});if(!res.ok)throw new Error('HTTP '+res.status);return parseYahoo(await res.json())}
+    catch(e){if(signal.aborted)throw e;err=e}finally{clearTimeout(to);signal.removeEventListener('abort',ab)}}
+  throw err;
+}
+function drawNq(){
+  const cv=$('nqChart'),ctx=cv.getContext('2d'),g=lastGood,dpr=window.devicePixelRatio||1,W=cv.clientWidth,H=90,I=$('nqInfo');
+  cv.width=Math.round(W*dpr);cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,W,H);
+  const b=g&&g.nq;if(!b||b.length<2||!W){I.textContent=g&&g.nqErr?'non disponibile':'—';return}
+  const cs=b.map(x=>x.close),f=cs[0],l=cs[cs.length-1],lo=Math.min(...cs),hi=Math.max(...cs),sp=hi-lo||1,ch=(l/f-1)*100;
+  const css=getComputedStyle(document.documentElement),col=l>=f?css.getPropertyValue('--bull'):css.getPropertyValue('--bear');
+  const x=i=>4+i*(W-8)/(cs.length-1),y=v=>H-6-(v-lo)/sp*(H-12);
+  ctx.strokeStyle='#475569';ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(4,y(f));ctx.lineTo(W-4,y(f));ctx.stroke();ctx.setLineDash([]);
+  ctx.strokeStyle=col;ctx.lineWidth=1.8;ctx.beginPath();cs.forEach((v,i)=>i?ctx.lineTo(x(i),y(v)):ctx.moveTo(x(i),y(v)));ctx.stroke();
+  I.textContent=fmt(l,1)+' · '+(ch>=0?'+':'−')+fmt(Math.abs(ch),2)+'% dall\'apertura';I.style.color=col;
+}
+async function fetchBars(signal,iv,sym,rng){
+  const symbol=(sym||$('symbol').value).trim().toUpperCase();
+  if(!symbol)throw new Error('Inserisci un simbolo, per esempio QQQ o NQ=F.');
+  const interval=iv||$('interval').value,range=rng||RANGE[interval];
+  const path='/v8/finance/chart/'+encodeURIComponent(symbol)+'?interval='+encodeURIComponent(interval)+'&range='+encodeURIComponent(range);
+  const urls=[PROXY+path,PROXY+'/?url='+encodeURIComponent('https://query1.finance.yahoo.com'+path),PROXY+'/?symbol='+encodeURIComponent(symbol)+'&interval='+encodeURIComponent(interval)+'&range='+encodeURIComponent(range)];
+  let err;
+  for(const url of urls){
+    const ac=new AbortController(),abort=()=>ac.abort(),to=setTimeout(()=>ac.abort(),12000);
+    signal.addEventListener('abort',abort,{once:true});
+    try{
+      const res=await fetch(url,{cache:'no-store',signal:ac.signal});
+      if(!res.ok)throw new Error('HTTP '+res.status);
+      const bars=parseYahoo(await res.json());
+      if(bars.length<MINBARS)throw Object.assign(new Error('Yahoo ha restituito solo '+bars.length+' barre valide: ne servono almeno '+MINBARS+' per Pace e distanze ('+IDXNEED+' per l\'indice). Non è un errore di calcolo: manca storia da Yahoo per questo simbolo/timeframe.'),{insufficient:true,got:bars.length});
+      return bars;
+    }catch(e){if(signal.aborted)throw e;err=e.name==='AbortError'?new Error('Timeout Yahoo'):e}
+    finally{clearTimeout(to);signal.removeEventListener('abort',abort)}
+  }
+  throw err||new Error('Impossibile caricare i dati');
+}
+
+// Storia: per i timeframe con RANGE_ALT prova prima la storia estesa; se le barre valide sono meno di IDXNEED prova anche la richiesta standard
+// e tiene la serie più lunga. Un errore dell'estesa non interrompe il caricamento (Pace e distanze restano calcolabili con >= MINBARS).
+async function loadBars(signal,interval,symbol){
+  const alt=RANGE_ALT[interval],src={ext:null,std:null,extErr:null,stdErr:null,used:null};let best=null,lastErr=null;
+  const attempt=async rng=>{try{return await fetchBars(signal,interval,symbol,rng)}catch(e){if(signal.aborted)throw e;lastErr=e;return {err:e}}};
+  const why=e=>e.insufficient?'solo '+e.got+' barre valide':e.message;
+  if(alt){const b=await attempt(alt);if(b.err)src.extErr=why(b.err);else{src.ext=b.length;best=b;best.rng=alt}}
+  if(!best||best.length<IDXNEED){const b=await attempt();if(b.err)src.stdErr=why(b.err);else{src.std=b.length;if(!best||b.length>best.length){best=b;best.rng=RANGE[interval]}}}
+  if(!best)throw lastErr||new Error('Impossibile caricare i dati');
+  src.used=best.rng;best.src=src;return best;
+}
+// ---------- calcolo ----------
+const trOf=(b,pc)=>pc===undefined?b.high-b.low:Math.max(b.high-b.low,Math.abs(b.high-pc),Math.abs(b.low-pc));
+// ATR di Wilder (RMA): null finché non ci sono ATRLEN barre
+function atrSeries(bars){
+  const out=Array(bars.length).fill(null),tr=bars.map((b,i)=>trOf(b,i?bars[i-1].close:undefined));
+  let a=null;
+  for(let i=0;i<bars.length;i++){
+    if(i<ATRLEN-1)continue;
+    if(i===ATRLEN-1){let s=0;for(let j=0;j<ATRLEN;j++)s+=tr[j];a=s/ATRLEN}
+    else a=(a*(ATRLEN-1)+tr[i])/ATRLEN;
+    out[i]=a;
+  }
+  return {atr:out,tr};
+}
+// pace[i] = (close[i] - close[i-10]) / (ATR[i] * 10); null se ATR non completo o nullo (mai 0 inventato). sm = media a 3 barre, null se manca un valore.
+function paceSeries(bars){
+  const {atr}=atrSeries(bars);
+  const pace=bars.map((b,i)=>{const a=atr[i];return i>=LOOKBACK&&a>0?(b.close-bars[i-LOOKBACK].close)/(a*LOOKBACK):null});
+  const sm=pace.map((_,i)=>{if(i<SMLEN-1)return null;const w=[pace[i],pace[i-1],pace[i-2]];return w.every(Number.isFinite)?(w[0]+w[1]+w[2])/SMLEN:null});
+  return {atr,pace,sm,first:Math.max(ATRLEN-1,LOOKBACK)+SMLEN-1}; // first = primo indice con media del pace costruita solo da pace con ATR completo
+}
+// Distanza (>=0) dalla chiusura attuale alla chiusura della barra in corso che porta la media a 3 barre del pace a +THR (dir=+1) o -THR (dir=-1).
+// Stima con ATR tenuto fisso al valore attuale: serve pace_barra = dir*THR*3 - pace[i-1] - pace[i-2], quindi chiusura = chiusura[i-10] + pace_barra*ATR*10.
+// 0 = soglia già superata. null = ATR nullo (serie ferma), calcolo impossibile.
+function rawDistance(bars,s,dir){return rawDistanceAt(bars,s,bars.length-1,dir)}
+function rawDistanceAt(bars,s,i,dir){ // come distanceTo ma senza il minimo a 0: negativa se la soglia è già superata. null se mancano barre o Pace necessari
+  if(!bars||!s||!s.atr||!s.pace||!Number.isInteger(i)||i<2||i<LOOKBACK||i>=bars.length)return null;
+  const b=bars[i],r=bars[i-LOOKBACK];
+  if(!b||!r||!Number.isFinite(b.close)||!Number.isFinite(r.close))return null;
+  const a=s.atr[i],p1=s.pace[i-1],p2=s.pace[i-2];
+  if(!(a>0)||!Number.isFinite(p1)||!Number.isFinite(p2))return null;
+  const need=dir*THR*SMLEN-p1-p2,v=dir*(r.close+need*a*LOOKBACK-b.close);
+  return Number.isFinite(v)?v:null;
+}
+function distanceTo(bars,s,dir){const r=rawDistance(bars,s,dir);return r===null?null:Math.max(0,r)}
+// Tenuta: barre consecutive (fino all'ultima) con Pace mediato oltre soglia, contando SOLO barre valide (ATR 14 completo, indice >= first).
+// verified=false se la serie valida finisce prima di trovare una barra che non supera la soglia (non si può sapere quante ce ne fossero) e k<HOLD.
+// Indipendente da distanceTo.
+function holdInfo(s,dir){
+  let k=0,j=s.sm.length-1;
+  for(;j>=s.first&&Number.isFinite(s.sm[j])&&(dir>0?s.sm[j]>=THR:s.sm[j]<=-THR);j--)k++;
+  const dataEnd=j<s.first,bad=j>=s.first&&!Number.isFinite(s.sm[j]);
+  return {k,verified:k>=HOLD||(!dataEnd&&!bad),reached:k>=HOLD};
+}
+// MACD 12/26/9 come nello script CM_MacD_Ult: signal = media semplice (SMA) a 9 del MACD, istogramma = MACD − signal.
+// Le prime barre (EMA ancora in avvio, partono dal primo valore) sono escluse: servono 26 + 9 − 1 = 34 barre.
+// EMA con avvio standard: i primi `period` valori formano la SMA che fa da seme (nessun valore prima).
+function emaSeries(values,period){
+  const out=Array(values.length).fill(null),alpha=2/(period+1);let ema=null,sum=0,cnt=0;
+  for(let i=0;i<values.length;i++){
+    const v=values[i];
+    if(!Number.isFinite(v)){ema=null;sum=0;cnt=0;continue}
+    if(ema===null){sum+=v;cnt++;if(cnt===period){ema=sum/period;out[i]=ema}}
+    else{ema=alpha*v+(1-alpha)*ema;out[i]=ema}
+  }
+  return out;
+}
+// linea MACD valida da indice 25, signal (SMA 9) da indice 33, istogramma = MACD − signal. Unica funzione usata da indice e grafico.
+function macdSeries(closes){
+  const e12=emaSeries(closes,12),e26=emaSeries(closes,26);
+  const line=closes.map((_,i)=>Number.isFinite(e12[i])&&Number.isFinite(e26[i])?e12[i]-e26[i]:null);
+  const sig=line.map((_,i)=>{if(i<8)return null;const w=line.slice(i-8,i+1);return w.every(Number.isFinite)?w.reduce((x,y)=>x+y,0)/9:null});
+  const hist=line.map((v,i)=>Number.isFinite(v)&&Number.isFinite(sig[i])?v-sig[i]:null);
+  return {line,sig,hist};
+}
+const macdHistogram=closes=>macdSeries(closes).hist;
+const IDX_MIN=30,STAB=100,IDXNEED=STAB+IDX_MIN,PACE_STAB=60; // STAB: barre di riscaldamento misurate in simulazione (840 serie): errore istogramma/ATR a 100 barre p95 0,13%, max 0,25%; a 85 barre p95 0,46%, max 0,99%
+const cntValid=(vals,i,w=100)=>{let n=0;for(let j=Math.max(0,i-w+1);j<=i;j++)if(Number.isFinite(vals[j]))n++;return n};
+// Percentile rank of the absolute current value among recent valid absolute values, with sign restored.
+// This avoids comparing raw MACD units with Pace units.
+function signedMagnitudeRank(values,i,window=100){
+  const v=values[i];if(!Number.isFinite(v))return null;
+  const sample=[];for(let j=Math.max(0,i-window+1);j<=i;j++)if(Number.isFinite(values[j]))sample.push(Math.abs(values[j]));
+  if(sample.length<IDX_MIN)return null;
+  const mag=Math.abs(v),less=sample.filter(x=>x<mag).length,equal=sample.filter(x=>x===mag).length;
+  const percentile=(less+0.5*equal)/sample.length;
+  return Math.max(-100,Math.min(100,Math.sign(v)*percentile*100));
+}
+function combinedIndexSeries(bars,s){
+  const hist=macdHistogram(bars.map(b=>b.close));
+  const histNorm=hist.map((v,i)=>i>=STAB&&Number.isFinite(v)&&Number.isFinite(s.atr[i])&&s.atr[i]>0?v/s.atr[i]:null);
+  const paceNorm=s.sm.map((v,i)=>i>=Math.max(s.first,STAB)&&Number.isFinite(v)?v:null);
+  const paceRank=paceNorm.map((_,i)=>signedMagnitudeRank(paceNorm,i));
+  const macdRank=histNorm.map((_,i)=>signedMagnitudeRank(histNorm,i));
+  const index=bars.map((_,i)=>Number.isFinite(paceRank[i])&&Number.isFinite(macdRank[i])?(paceRank[i]+macdRank[i])/2:null);
+  return {index,paceRank,macdRank,hist,histNorm,paceNorm};
+}
+// Scarto GIÙ − SU a ogni minuto COMPLETO della sessione, calcolato con la barra del timeframe scelto ricostruita fino a quel minuto
+// (aperto della barra, massimo/minimo parziali, chiusura = chiusura del minuto). from: ultimo minuto già calcolato (ms).
+function minuteGaps(bars,mbars,stepMs,reg,from,now){
+  const out=[];let j=0;
+  for(const m of mbars){
+    if(m.time<reg.start||m.time>=reg.end||m.time<=from||m.time+60000>now)continue;
+    while(j+1<bars.length&&bars[j+1].time<=m.time)j++;
+    const bj=bars[j];if(!bj||m.time<bj.time||m.time>=bj.time+stepMs)continue; // nessuna barra del timeframe contiene questo minuto
+    let o=null,h=-Infinity,l=Infinity;
+    for(const x of mbars){if(x.time<bj.time||x.time>m.time)continue;if(o===null)o=x.open;if(x.high>h)h=x.high;if(x.low<l)l=x.low}
+    if(o===null)continue;
+    const arr=bars.slice(Math.max(0,j-250),j);arr.push({time:bj.time,open:o,high:h,low:l,close:m.close});
+    if(arr.length<MINBARS)continue;
+    const ps=paceSeries(arr),i=arr.length-1,u=rawDistanceAt(arr,ps,i,1),d=rawDistanceAt(arr,ps,i,-1);
+    if(Number.isFinite(u)&&Number.isFinite(d))out.push({t:m.time,gp:d-u,c:m.close});
+  }
+  return out;
+}
+// Qualità dello storico minuto per minuto: COMPLETO (copre la sessione), PARZIALE (con buchi), RICOSTRUITO (nessun dato a 1 minuto: scarto dalle chiusure delle barre)
+function mgQuality(bars,mg,now){
+  if(!bars||!bars.reg)return {kind:'assente',txt:'sessione non identificata: storico minuto per minuto non disponibile'};
+  if(!mg||!mg.length)return {kind:'ricostruito',txt:'RICOSTRUITO: nessun dato a 1 minuto da Yahoo; scarto ricostruito dalle chiusure delle barre (campioni più radi, i minuti intermedi mancano)'};
+  const end=Math.min(now,bars.reg.end),expected=Math.max(1,Math.floor((end-bars.reg.start)/60000)),n=mg.length,pct=Math.min(100,n/expected*100),gap=Math.round((mg[0].t-bars.reg.start)/60000);
+  if(pct>=98&&gap<=2)return {kind:'completo',n,expected,pct,txt:'COMPLETO: '+n+' minuti su '+expected+' della sessione'};
+  return {kind:'parziale',n,expected,pct,txt:'PARZIALE: '+n+' minuti su '+expected+' ('+Math.round(pct)+'%)'+(gap>2?', il primo è '+gap+' min dopo l\'apertura':'')+': min e max di sessione potrebbero non includere i minuti mancanti'};
+}
+function analyze(bars,exLast,mg,nowMs){
+  if(!bars||bars.length<MINBARS)return null;
+  const s=paceSeries(bars),i=bars.length-1,c=bars[i].close;
+  const up=distanceTo(bars,s,1),dn=distanceTo(bars,s,-1),upRaw=rawDistance(bars,s,1),dnRaw=rawDistance(bars,s,-1),combo=combinedIndexSeries(bars,s);
+  // massimi dello scarto (GIÙ − SU) nella sessione corrente: per ogni barra della sessione, scarto calcolato alla sua chiusura.
+  // SU = scarto più positivo (SU più vicino), GIÙ = scarto più negativo (GIÙ più vicino).
+  let sMax=null,sMin=null,sMinUp=null,sMaxDn=null,run=null; // sMinUp: scarto positivo più piccolo; sMaxDn: scarto negativo più vicino a zero
+  const items=[]; // campioni dello scarto: minuto dopo minuto (mg) se disponibili, altrimenti chiusura di ogni barra
+  if(mg)for(const e of mg)items.push(e);
+  else if(bars.reg)for(let k=0;k<bars.length-(exLast?1:0);k++){ // exLast: mercato aperto, la barra in corso non entra: il valore corrente si campiona una volta al minuto
+    const b=bars[k];if(b.time<bars.reg.start||b.time>=bars.reg.end)continue;
+    const u=k>=s.first?rawDistanceAt(bars,s,k,1):null,d=k>=s.first?rawDistanceAt(bars,s,k,-1):null;
+    if(!Number.isFinite(u)||!Number.isFinite(d))continue;
+    items.push({t:b.time,gp:d-u,c:b.close});
+  }
+  let bMax=null,bMin=null,bMinUp=null,bMaxDn=null; // a chiusura barra, come prima: tutte le barre della sessione, compresa quella in corso
+  if(bars.reg)for(let k=s.first;k<bars.length;k++){
+    const b=bars[k];if(b.time<bars.reg.start||b.time>=bars.reg.end)continue;
+    const u=rawDistanceAt(bars,s,k,1),d=rawDistanceAt(bars,s,k,-1);if(!Number.isFinite(u)||!Number.isFinite(d))continue;
+    const gp=d-u,t=b.time;
+    if(!bMax||gp>bMax.v)bMax={v:gp,t};if(!bMin||gp<bMin.v)bMin={v:gp,t};
+    if(gp>0&&(!bMinUp||gp<bMinUp.v))bMinUp={v:gp,t};if(gp<0&&(!bMaxDn||gp>bMaxDn.v))bMaxDn={v:gp,t};
+  }
+  for(const it of items){
+    const gp=it.gp,t=it.t;
+    if(!sMax||gp>sMax.v)sMax={v:gp,t};
+    if(!sMin||gp<sMin.v)sMin={v:gp,t};
+    if(gp>0&&(!sMinUp||gp<sMinUp.v))sMinUp={v:gp,t};
+    if(gp<0&&(!sMaxDn||gp>sMaxDn.v))sMaxDn={v:gp,t};
+    const sg=gp>0?1:gp<0?-1:0; // serie in corso: si riparte da zero a ogni cambio di segno (colore)
+    if(!run||run.sg!==sg)run={sg,t0:t,c0:it.c,g0:gp,mx:{v:gp,t},mn:{v:gp,t}};
+    else{if(Math.abs(gp)>Math.abs(run.mx.v))run.mx={v:gp,t};if(Math.abs(gp)<Math.abs(run.mn.v))run.mn={v:gp,t}}
+  }
+  const n=bars.length,nP=cntValid(combo.paceNorm,i),nM=cntValid(combo.histNorm,i),ix0=n>=IDXNEED?combo.index[i]:null,ix=Number.isFinite(ix0)&&Math.abs(ix0)<=100&&Number.isFinite(combo.paceRank[i])&&Number.isFinite(combo.macdRank[i])?ix0:null;let idxWhy; // mai un valore non finito o fuori scala come attendibile
+  if(Number.isFinite(ix))idxWhy='valido · campioni dopo riscaldamento: Pace '+nP+', MACD '+nM+' (minimo '+IDX_MIN+')';
+  else if(n<IDXNEED)idxWhy='barre insufficienti per l\'indice: '+n+' di '+IDXNEED+' (mancano '+(IDXNEED-n)+': '+STAB+' di riscaldamento + '+IDX_MIN+' campioni validi). Il Pace è calcolabile.';
+  else{const w=[];
+    if(!Number.isFinite(combo.paceRank[i]))w.push('Pace '+(Number.isFinite(combo.paceNorm[i])?'campioni '+nP+'/'+IDX_MIN:'non valido (ATR nullo o mancante)'));
+    if(!Number.isFinite(combo.macdRank[i]))w.push('MACD '+(Number.isFinite(combo.histNorm[i])?'campioni '+nM+'/'+IDX_MIN:'non valido (ATR nullo o mancante)'));
+    if(!w.length)w.push('valore fuori scala o non finito');
+    idxWhy='non valido: '+w.join(', ')}
+  const h=combo.hist[i],hp=combo.hist[i-1],macdDir=Number.isFinite(h)&&Number.isFinite(hp)?(h-hp>1e-9?'in aumento':h-hp<-1e-9?'in diminuzione':'stabile'):null;
+  return {atrRank:atrRankAt(s,i),mgQ:mgQuality(bars,mg,Number.isFinite(nowMs)?nowMs:Date.now()),run,sMax,sMin,sMinUp,sMaxDn,bMax,bMin,bMinUp,bMaxDn,idxWhy,macdHist:h,macdDir,comboIndex:ix,paceComponent:combo.paceRank[i],macdComponent:combo.macdRank[i],upRaw,dnRaw,close:c,pace:s.sm[i],smPrev:s.sm[i-1],atr:s.atr[i],up,dn,upHold:holdInfo(s,1),dnHold:holdInfo(s,-1)};
+}
+
+// ---------- confronto, andamento, stato dati ----------
+const EQ_ATR=0.05,TREND_TXT={up:'in aumento',down:'in diminuzione',flat:'stabile'};
+// distanze equivalenti se differiscono meno di EQ_ATR ATR; la più piccola indica la soglia più vicina (distanza, non probabilità)
+function compareSides(up,dn,atr){
+  if(up===null||dn===null)return {closer:null,text:'Confronto non possibile (ATR nullo o storia del Pace mancante).'};
+  if(up===0&&dn===0)return {closer:null,text:'Entrambe le soglie risultano superate: dati incoerenti.'};
+  if(up===0)return {closer:'up',text:'SU: soglia già superata. GIÙ dista '+fmt(dn)+' pp.'};
+  if(dn===0)return {closer:'dn',text:'GIÙ: soglia già superata. SU dista '+fmt(up)+' pp.'};
+  if(Math.abs(up-dn)<=EQ_ATR*atr)return {closer:null,text:'Distanze sostanzialmente equivalenti: SU '+fmt(up)+' pp, GIÙ '+fmt(dn)+' pp.'};
+  return up<dn?{closer:'up',text:'SU è la soglia più vicina: '+fmt(up)+' pp contro '+fmt(dn)+' pp di GIÙ.'}:{closer:'dn',text:'GIÙ è la soglia più vicina: '+fmt(dn)+' pp contro '+fmt(up)+' pp di SU.'};
+}
+const trendOf=(d,tol)=>!Number.isFinite(d)?null:d>tol+1e-9?'up':d<-tol-1e-9?'down':'flat'; // 1e-9: il rumore dei decimali non deve far superare una tolleranza esatta
+// A) Pace algebrico (valore con segno) e B) intensità |Pace|: stessa tolleranza, due verdetti separati (da -0,50 a -0,60: A in diminuzione, B in aumento)
+function paceTrends(cur,prev,tol){if(!Number.isFinite(cur)||!Number.isFinite(prev))return {alg:null,abs:null,dAlg:NaN,dAbs:NaN};const dAlg=cur-prev,dAbs=Math.abs(cur)-Math.abs(prev);return {alg:trendOf(dAlg,tol),abs:trendOf(dAbs,tol),dAlg,dAbs}}
+const sgnFmt=(v,d)=>!Number.isFinite(v)?'—':(Number(Math.abs(v).toFixed(d))===0?'':v>0?'+':'−')+fmt(Math.abs(v),d);
+function fmtAge(ms){const s=Math.max(0,Math.round(ms/1000));if(s<60)return s+' s';const m=Math.floor(s/60);if(m<60)return m+' min '+(s%60)+' s';const h=Math.floor(m/60);if(h<48)return h+' h '+(m%60)+' min';return Math.floor(h/24)+' g '+(h%24)+' h'}
+// aggiornati / ritardati / non verificabili, in base all'orario di mercato che Yahoo dichiara (reg) e all'apertura dell'ultima candela
+function dataStatus(lastTime,reg,interval,now){
+  if(!reg)return {cls:'unk',label:'NON VERIFICABILI',why:'Yahoo non indica l\'orario di mercato'};
+  const step=STEP[interval]*1000;
+  if(now-reg.end>5*86400000)return {cls:'unk',label:'NON VERIFICABILI',why:'l\'orario di mercato indicato da Yahoo è più vecchio di 5 giorni'};
+  if(now<reg.start)return {cls:'unk',label:'NON VERIFICABILI',why:'sessione non ancora iniziata'};
+  if(interval==='1d'){const ok=lastTime>=reg.start-3600000;return ok?{cls:'ok',label:'AGGIORNATI',why:now<reg.end?'mercato aperto':'mercato chiuso'}:{cls:'late',label:'RITARDATI',why:'manca la candela giornaliera di oggi'}}
+  if(now<reg.end){const age=now-lastTime;return age<=2*step+60000?{cls:'ok',label:'AGGIORNATI',why:'mercato aperto'}:{cls:'late',label:'RITARDATI',why:'mercato aperto, nessuna candela da oltre 2 barre'}}
+  return lastTime>=reg.end-step-60000?{cls:'ok',label:'AGGIORNATI',why:'mercato chiuso, ultima candela di sessione'}:{cls:'late',label:'RITARDATI',why:'mercato chiuso ma manca la fine della sessione'};
+}
+
+// confronto con l'ultimo caricamento riuscito (stessa selezione): nuova candela / aggiornata / invariata / risposta più vecchia
+function classify(prevG,key,last){
+  if(!prevG||prevG.key!==key)return 'first';
+  if(last.time>prevG.last.time)return 'new';
+  if(last.time<prevG.last.time)return 'older';
+  const p=prevG.last;
+  return(last.open!==p.open||last.high!==p.high||last.low!==p.low||last.close!==p.close)?'updated':'same';
+}
+const KIND={first:{t:'PRIMO CARICAMENTO',cls:'unk',d:'nessun dato precedente con cui confrontare'},
+ 'new':{t:'NUOVA CANDELA',cls:'ok',d:'timestamp successivo a quello precedente'},
+ updated:{t:'CANDELA AGGIORNATA',cls:'ok',d:'stesso timestamp, valori della candela cambiati'},
+ same:{t:'DATI INVARIATI',cls:'unk',d:'stesso timestamp e stessi valori: può essere normale in alcune fasi di mercato'},
+ obsolete:{t:'RISPOSTA OBSOLETA',cls:'late',d:''},unverified:{t:'ATTUALITÀ NON VERIFICABILE',cls:'unk',d:''},short:{t:'BARRE INSUFFICIENTI (YAHOO)',cls:'late',d:''},delayed:{t:'DATI RITARDATI',cls:'late',d:''},kept:{t:'VALORI CONSERVATI',cls:'late',d:''},error:{t:'ERRORE DI CARICAMENTO',cls:'late',d:''}};
+// priorità: errore > obsoleti > esito del confronto dell'ultimo caricamento
+function isKept(g,now){const sec=Number($('refresh').value),lim=sec>0&&!stopped?2.5*sec*1000+15000:120000;return now-g.loadedAt>lim} // valori più vecchi di quanto previsto dal ritmo di aggiornamento
+function kindNow(g,now){
+  if(failed)return {k:failed.insufficient?'short':'error',d:failed.msg};
+  if(olderNote)return {k:'obsolete',d:olderNote};
+  if(g){const st=dataStatus(g.last.time,g.reg,g.interval,now);if(st.cls==='late')return {k:'delayed',d:st.why};if(isKept(g,now))return {k:'kept',d:'ultimo aggiornamento riuscito '+fmtAge(now-g.loadedAt)+' fa: valori conservati, non appena aggiornati'};if(st.cls==='unk')return {k:'unverified',d:st.why+': una richiesta HTTP riuscita non conferma che i dati siano attuali'}}
+  return {k:g?g.kind:null,d:''};
+}
+
+// ---------- movimento tra due aggiornamenti ----------
+// Scarto = distanza GIÙ − distanza SU (con segno, senza minimo a 0): positivo = SU più vicino. Se lo scarto cresce, il prezzo si sta spostando verso SU.
+// Tra due candele diverse la finestra di 10 barre scorre, quindi le distanze non sono confrontabili: quel giro è marcato «cambio» e non entra nel verdetto.
+function moveStep(prev,cur,sens){
+  if(!prev)return null;
+  const dt=Math.round((cur.loadedAt-prev.loadedAt)/1000);
+  if(cur.last.time!==prev.last.time)return {v:'skip',dt};
+  const a=cur.r,b=prev.r;
+  if(![a.upRaw,a.dnRaw,b.upRaw,b.dnRaw].every(Number.isFinite))return null;
+  const dUp=a.upRaw-b.upRaw,dDn=a.dnRaw-b.dnRaw,gap=a.dnRaw-a.upRaw,dGap=gap-(b.dnRaw-b.upRaw),tol=sens*a.atr;
+  const v=dGap>tol+1e-9?'su':dGap<-tol-1e-9?'giu':'fermo';
+  return {v,dt,dUp,dDn,gap,dGap,tol};
+}
+function moveSummary(hist,n){
+  const w=hist.filter(h=>h.v!=='skip').slice(-n),c={su:0,giu:0,fermo:0};w.forEach(h=>c[h.v]++);
+  return {c,len:w.length,net:w.reduce((s,h)=>s+h.dGap,0)};
+}
+const MV_TXT={su:'▲ VERSO SU',giu:'▼ VERSO GIÙ',fermo:'= FERMO',skip:'┆ CAMBIO CANDELA'},MV_SYM={su:'▲',giu:'▼',fermo:'=',skip:'┆'};
+function renderMove(){
+  const g=lastGood;if(!g)return;
+  const m=g.move,V=$('mvVerdict');
+  if(!m){V.className='mv fermo';V.textContent='Primo aggiornamento: serve il prossimo';$('mvWhen').textContent='Movimento dall\'ultimo aggiornamento';['mvUp','mvDn','mvGap','mvStreak','mvSum'].forEach(id=>{$(id).textContent='—'});$('mvHist').textContent='';return}
+  $('mvWhen').textContent='Movimento negli ultimi '+m.dt+' s';
+  V.className='mv '+m.v;
+  if(m.v==='skip'){V.textContent=MV_TXT.skip+' · non confrontabile';['mvUp','mvDn','mvGap'].forEach(id=>{$(id).textContent='—'})}
+  else{
+    V.textContent=MV_TXT[m.v];
+    const side=(d)=>sgnFmt(d,3)+' pp ('+(Math.abs(d)<=m.tol+1e-9?'fermo':d<0?'si avvicina':'si allontana')+')';
+    $('mvUp').textContent=side(m.dUp);$('mvDn').textContent=side(m.dDn);
+    $('mvGap').textContent=sgnFmt(m.gap,3)+' pp ('+(m.gap>0?'SU più vicino':m.gap<0?'GIÙ più vicino':'pari')+') · Δ '+sgnFmt(m.dGap,3);
+  }
+  const h=g.hist.filter(x=>x.v!=='skip');let k=0;
+  for(let i=h.length-1;i>=0&&h[i].v===m.v&&m.v!=='skip';i--)k++;
+  $('mvStreak').textContent=m.v==='skip'?'—':k+' '+(k===1?'giro':'giri')+' '+MV_SYM[m.v];
+  const sm=moveSummary(g.hist,SUMN);
+  $('mvSum').textContent=sm.len?sm.c.su+' ▲ · '+sm.c.giu+' ▼ · '+sm.c.fermo+' = · netto '+sgnFmt(sm.net,3)+' pp':'—';
+  const box=$('mvHist');box.textContent='';
+  g.hist.slice(-HISTMAX).forEach(x=>{const e=document.createElement('span');e.className=x.v;e.textContent=MV_SYM[x.v];box.appendChild(e)});
+}
+
+// ---------- grafico: Pace con soglie + MACD (CM_MacD_Ult) ----------
+const ROME_HM=new Intl.DateTimeFormat('it-IT',{timeZone:'Europe/Rome',hourCycle:'h23',hour:'2-digit',minute:'2-digit'});
+function romeMin(ms){const p=ROME_HM.formatToParts(new Date(ms)),g=t=>Number(p.find(x=>x.type===t).value);return g('hour')*60+g('minute')}
+// le 08:15 italiane più recenti, non successive all'ultima barra (corretto se tra le due c'è il cambio dell'ora legale)
+function chartStart(lastMs){
+  const T=8*60+15;let d=romeMin(lastMs)-T;if(d<0)d+=1440;
+  let t=lastMs-d*60000;const e=T-romeMin(t);if(e&&Math.abs(e)<=120)t+=e*60000;
+  return t;
+}
+function chartData(bars){
+  const N=80,s=paceSeries(bars),m=macdSeries(bars.map(b=>b.close)),macd=m.line,sig=m.sig,hs=m.hist;
+  const t0=chartStart(bars[bars.length-1].time);let from=bars.findIndex(b=>b.time>=t0);if(from<0)from=bars.length-N;from=Math.max(9,Math.min(from,bars.length-2));const cd={t:[],sm:[],macd:[],sig:[],hist:[],dots:[]};
+  for(let i=from;i<bars.length;i++){
+    cd.t.push(bars[i].time);cd.sm.push(s.sm[i]);cd.macd.push(macd[i]);cd.sig.push(sig[i]);cd.hist.push(Number.isFinite(hs[i])?hs[i]:NaN);
+    if(i>from&&[macd[i],sig[i],macd[i-1],sig[i-1]].every(Number.isFinite)&&(macd[i]>=sig[i])!==(macd[i-1]>=sig[i-1]))cd.dots.push({j:i-from,up:macd[i]>=sig[i]});
+  }
+  return cd;
+}
+function drawChart(){
+  const cv=$('chart'),ctx=cv.getContext('2d'),g=lastGood,dpr=window.devicePixelRatio||1,W=cv.clientWidth,H=300;
+  cv.width=Math.round(W*dpr);cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,W,H);
+  ctx.font='11px -apple-system,BlinkMacSystemFont,sans-serif';ctx.textBaseline='middle';
+  if(!g||!W)return;
+  if(!g.cd){ctx.fillStyle='#94a3b8';ctx.textAlign='left';ctx.fillText('Dati a 5 minuti non disponibili per questo simbolo.',8,H/2);return}
+  const cd=g.cd,n=cd.sm.length,L=42,R=50,T=24,B=H-20,fin=Number.isFinite,x=j=>L+(n>1?j*(W-L-R)/(n-1):0);
+  const line=(pts,col,w,dash)=>{ctx.beginPath();let on=false;pts.forEach(([a,b])=>{if(!fin(b)){on=false;return}on?ctx.lineTo(a,b):ctx.moveTo(a,b);on=true});ctx.strokeStyle=col;ctx.lineWidth=w;ctx.setLineDash(dash||[]);ctx.stroke();ctx.setLineDash([])};
+  // due scale con lo zero in comune: Pace a sinistra, MACD a destra
+  const pm=Math.max(0.6,...cd.sm.filter(fin).map(v=>Math.abs(v)*1.1)),py=v=>T+(B-T)*(1-(v+pm)/(2*pm));
+  const mm=Math.max(1e-9,...[...cd.macd,...cd.sig,...cd.hist].filter(fin).map(v=>Math.abs(v)))*1.15,my=v=>T+(B-T)*(1-(v+mm)/(2*mm));
+  // zone oltre soglia
+  ctx.fillStyle='rgba(34,197,166,.14)';ctx.fillRect(L,T,W-L-R,py(THR)-T);
+  ctx.fillStyle='rgba(244,114,182,.14)';ctx.fillRect(L,py(-THR),W-L-R,B-py(-THR));
+  // istogramma MACD, 4 colori, sullo sfondo
+  const bw=Math.max(1,(W-L-R)/n*0.7);ctx.globalAlpha=.5;
+  cd.hist.forEach((h,j)=>{if(!fin(h))return;const pr=cd.hist[j-1],up=fin(pr)?h>pr:false,dn=fin(pr)?h<pr:false;
+    ctx.fillStyle=h>0?(up?'#22d3ee':dn?'#3b82f6':'#eab308'):(dn?'#ef4444':up?'#b91c1c':'#eab308');
+    const y0=my(0),y1=my(h);ctx.fillRect(x(j)-bw/2,Math.min(y0,y1),bw,Math.max(1,Math.abs(y1-y0)))});
+  ctx.globalAlpha=1;
+  line([[L,py(0)],[W-R,py(0)]],'rgba(226,232,240,.55)',1);
+  line([[L,py(THR)],[W-R,py(THR)]],'#22c5a6',1,[4,3]);line([[L,py(-THR)],[W-R,py(-THR)]],'#f472b6',1,[4,3]);
+  // incroci: traccia verticale tenue, così si legge a che Pace avvengono
+  cd.dots.forEach(d=>line([[x(d.j),T],[x(d.j),B]],d.up?'rgba(34,197,94,.35)':'rgba(239,68,68,.35)',1,[2,3]));
+  line(cd.sig.map((v,j)=>[x(j),fin(v)?my(v):NaN]),'#facc15',1.5);
+  for(let j=1;j<n;j++){if(![cd.macd[j],cd.macd[j-1],cd.sig[j]].every(fin))continue;
+    line([[x(j-1),my(cd.macd[j-1])],[x(j),my(cd.macd[j])]],cd.macd[j]>=cd.sig[j]?'#84cc16':'#ef4444',2)}
+  line(cd.sm.map((v,j)=>[x(j),fin(v)?py(v):NaN]),'#f8fafc',2.4);
+  cd.dots.forEach(d=>{if(!fin(cd.sig[d.j]))return;ctx.beginPath();ctx.arc(x(d.j),my(cd.sig[d.j]),4.5,0,7);ctx.fillStyle=d.up?'#22c55e':'#ef4444';ctx.fill();ctx.strokeStyle='#0b1020';ctx.lineWidth=1;ctx.stroke()});
+  const lv=cd.sm[n-1];
+  if(fin(lv)){ctx.beginPath();ctx.arc(x(n-1),py(lv),6,0,7);ctx.strokeStyle='#ffc078';ctx.lineWidth=2;ctx.stroke();ctx.fillStyle='#ffc078';ctx.textAlign='right';ctx.fillText(sgnFmt(lv,3),x(n-1)-10,Math.min(B-8,Math.max(T+8,py(lv)+(lv>0?14:-14))))}
+  // assi
+  ctx.fillStyle='#94a3b8';ctx.textAlign='left';
+  ctx.fillText('+0,40',2,py(THR));ctx.fillText('0',2,py(0));ctx.fillText('−0,40',2,py(-THR));
+  ctx.fillText(sgnFmt(mm,3),W-R+4,T+6);ctx.fillText('0',W-R+4,my(0));ctx.fillText(sgnFmt(-mm,3),W-R+4,B-6);
+  const tl=j=>new Date(cd.t[j]).toLocaleTimeString('it-IT',{timeZone:'Europe/Rome',hour:'2-digit',minute:'2-digit'});
+  [[0,'left'],[Math.round((n-1)/3),'center'],[Math.round(2*(n-1)/3),'center'],[n-1,'right']].forEach(([j,al])=>{ctx.textAlign=al;ctx.fillText(tl(j),x(j),H-8)});
+  // legenda
+  let lx=L+2;ctx.textAlign='left';
+  [['Pace (sx)','#f8fafc'],['MACD (dx)','#84cc16'],['Signal','#facc15'],['5 min da 08:15','#94a3b8']].forEach(([t,c])=>{line([[lx,11],[lx+12,11]],c,3);ctx.fillStyle='#94a3b8';ctx.fillText(t,lx+16,11);lx+=16+ctx.measureText(t).width+12});
+}
+window.addEventListener('resize',drawChart);
+(function(){const tg=$('showAll');try{tg.checked=localStorage.getItem('agShowAll')==='1'}catch(e){}
+  document.body.classList.toggle('showAll',tg.checked);
+  tg.addEventListener('change',()=>{document.body.classList.toggle('showAll',tg.checked);try{localStorage.setItem('agShowAll',tg.checked?'1':'0')}catch(e){}
+    requestAnimationFrame(()=>{try{drawChart()}catch(e){}try{drawNq()}catch(e){}})})})();
+
+// ---------- scarto SU/GIÙ nella sezione del grafico ----------
+// Tabella a fasce di 30 minuti (ora italiana) dalle 9:00 alla chiusura regolare: min e max dello scarto GIÙ − SU con orario.
+// Usa SOLO i campioni reali al minuto (g.winMg, gli stessi della barra dei 30 minuti) + lo scarto attuale nella fascia in corso. Nessun valore inventato: le fasce senza dati restano «—».
+function renderSlots(){
+  const B=$('slotBody'),N=$('slotNote'),g=lastGood;
+  if(!g||!g.reg){B.innerHTML='';N.textContent='—';return}
+  const hm=t=>ROME_HM.format(new Date(t)),STEP=1800000,MIN=60000;
+  const r=g.r,ok=Number.isFinite(r.upRaw)&&Number.isFinite(r.dnRaw),cur=ok?r.dnRaw-r.upRaw:NaN;
+  const rs=g.reg.start,re=g.reg.end,anchor=rs-(romeMin(rs)-540)*MIN; // 9:00 italiane del giorno di sessione
+  const close=Math.min(g.regEnd||re,anchor+16*3600000),n=Math.min(40,Math.max(1,Math.ceil((close-anchor)/STEP)));
+  const endT=Math.min(g.loadedAt,re),curMin=Math.floor(endT/MIN)*MIN;
+  const mg=g.winMg||[],col=v=>v>0?'var(--bull)':v<0?'var(--bear)':'var(--text)',pb=Array.isArray(lastMb)?lastMb:[];
+  // variazione di prezzo della fascia: apertura del primo minuto → chiusura dell'ultimo minuto reale a 1 minuto dentro la fascia (nessuna stima)
+  const pcell=(s,e)=>{let a=null,z=null;for(const b of pb){if(b.time<s||b.time>=e||b.time>endT)continue;if(!Number.isFinite(b.open)||!Number.isFinite(b.close))continue;if(!a)a=b;z=b}
+    if(!a)return '<td>—</td>';const d=z.close-a.open,pc=a.open?d/a.open*100:NaN;
+    return '<td style="color:'+col(d)+'">'+sgnFmt(d,2)+'<small>'+sgnFmt(pc,2)+'% · '+fmt(a.open,2)+'→'+fmt(z.close,2)+'</small></td>'};
+  const cell=o=>o?'<td style="color:'+col(o.v)+'">'+sgnFmt(o.v,2)+'<small>alle '+hm(o.t)+'</small></td>':'<td>—</td>';
+  let rows='',tot=0;
+  for(let i=0;i<n;i++){
+    const s=anchor+i*STEP,e=s+STEP,lab=hm(s)+'–'+hm(e);
+    if(s>endT){rows+='<tr class="fut"><td>'+lab+'<small>non ancora</small></td><td>—</td><td>—</td><td>—</td></tr>';continue}
+    let mn=null,mx=null,cnt=0;
+    const put=(v,t)=>{cnt++;if(!mn||v<mn.v)mn={v,t};if(!mx||v>mx.v)mx={v,t}};
+    for(const o of mg)if(Number.isFinite(o.gp)&&o.t>=s&&o.t<e)put(o.gp,o.t);
+    const live=ok&&curMin>=rs&&curMin>=s&&curMin<e&&curMin<re;if(live)put(cur,curMin);
+    tot+=cnt-(live?1:0);
+    const from=Math.max(s,rs),to=Math.min(e,endT),exp=Math.max(0,Math.floor((to-from)/MIN)+(live?1:0));
+    const inCorso=endT>=s&&endT<e;
+    rows+='<tr'+(inCorso?' class="now"':'')+'><td>'+lab+'<small>'+(inCorso?'in corso · ':'')+(cnt?cnt+(exp>cnt?' su '+exp:'')+' camp.':'nessun dato')+'</small></td>'+pcell(s,e)+cell(mn)+cell(mx)+'</tr>';
+  }
+  B.innerHTML=rows;
+  N.textContent=tot?'Solo campioni reali al minuto (più lo scarto attuale nella fascia in corso), Prezzo = variazione dall\'apertura del primo minuto alla chiusura dell\'ultimo minuto della fascia (barre reali a 1 minuto). Orari italiani. «n su m camp.» = minuti con dato su minuti trascorsi: se mancano, il min/max può essere incompleto. Nessun valore inventato.':'Nessun campione al minuto disponibile: tabella non calcolabile (servono i dati a 1 minuto).'
+}
+const ENT={ideal:.10,ok:.20,ex1:.50,ex2:.80,inv:.04,reb:.5}; // % dell'ampiezza (max − min); inv = distanza sotto il min; reb = rimbalzo minimo (pp) dal min dei 30 min
+function renderEntry(fx,mn,mx,ec){
+  const S=$('entStatus'),vals=['entIdeal','entOk','entInv'],txt=['entReb','entEx','entNote'];
+  const clr=m=>{vals.forEach(i=>{$(i).textContent='—'});txt.forEach(i=>{$(i).textContent=''});S.textContent=m||'—';S.style.color=m?'var(--warn)':''};
+  if(!(Number.isFinite(fx)&&mn&&mx)){clr();return}
+  const ov=parseFloat(String($('entMax').value).replace(',','.')),hyp=Number.isFinite(ov),top=hyp?ov:mx.v,lo=mn.v,amp=top-lo,f=v=>sgnFmt(v,2);
+  if(!(amp>0)){clr('Il max di riferimento deve stare sopra il min ('+f(lo)+' pp)');return}
+  const L=q=>lo+q*amp,ideal=L(ENT.ideal),okU=L(ENT.ok),e1=L(ENT.ex1),e2=L(ENT.ex2),inv=lo-ENT.inv*amp;
+  const reb=Number.isFinite(ec.cur)&&Number.isFinite(ec.lo)?ec.cur-ec.lo:NaN,rebOk=Number.isFinite(reb)&&reb>=ENT.reb;
+  $('entIdeal').textContent=f(lo)+' → '+f(ideal);$('entOk').textContent=f(okU)+' pp';$('entInv').textContent=f(inv)+' pp';
+  let t,c;
+  if(fx<inv){t='INVALIDATO · sotto '+f(inv)+' pp: non entrare, esci';c='var(--warn)'}
+  else if(fx<=ideal){t='ZONA IDEALE · entra a scaglioni';c='var(--bull)'}
+  else if(fx<=okU){t=rebOk?'ZONA ACCETTABILE · rimbalzo confermato: puoi entrare':'ZONA ACCETTABILE · aspetta la conferma del rimbalzo';c=rebOk?'var(--bull)':'var(--warn)'}
+  else if(fx>=e2){t='ZONA USCITA 2 · oltre '+f(e2)+' pp (80%)';c='var(--muted)'}
+  else if(fx>=e1){t='ZONA USCITA 1 · oltre '+f(e1)+' pp (50%)';c='var(--muted)'}
+  else{t='FUORI ZONA · già in recupero, non inseguire';c='var(--muted)'}
+  S.textContent=t+' · ora '+f(fx)+' pp';S.style.color=c;S.style.fontWeight='700';S.style.fontSize='13px';
+  $('entReb').textContent='Rimbalzo dal min degli ultimi 30 min: '+(Number.isFinite(reb)?f(reb)+' pp · '+(rebOk?'confermato':'non ancora (serve +'+fmt(ENT.reb,2)+')'):'non calcolabile');
+  $('entEx').textContent='Uscita 1 (50%): '+f(e1)+' pp · Uscita 2 (80%): '+f(e2)+' pp';
+  $('entNote').textContent=(hyp?'Max ipotizzato '+f(ov)+' pp (reale '+f(mx.v)+')':'Max reale di sessione '+f(mx.v))+' · ampiezza '+fmt(amp,2)+' pp · zone = % dell\'ampiezza, non è un consiglio finanziario'
+}
+function renderShort(fx,mn,mx,ec){
+  const S=$('shStatus'),vals=['shIdeal','shOk','shInv'],txt=['shReb','shEx','shNote'];
+  const clr=m=>{vals.forEach(i=>{$(i).textContent='—'});txt.forEach(i=>{$(i).textContent=''});S.textContent=m||'—';S.style.color=m?'var(--warn)':''};
+  if(!(Number.isFinite(fx)&&mn&&mx)){clr();return}
+  const ov=parseFloat(String($('shMin').value).replace(',','.')),hyp=Number.isFinite(ov),bot=hyp?ov:mn.v,hi=mx.v,amp=hi-bot,f=v=>sgnFmt(v,2);
+  if(!(amp>0)){clr('Il min di riferimento deve stare sotto il max ('+f(hi)+' pp)');return}
+  const L=q=>hi-q*amp,ideal=L(ENT.ideal),okU=L(ENT.ok),e1=L(ENT.ex1),e2=L(ENT.ex2),inv=hi+ENT.inv*amp;
+  const reb=Number.isFinite(ec.cur)&&Number.isFinite(ec.hi)?ec.hi-ec.cur:NaN,rebOk=Number.isFinite(reb)&&reb>=ENT.reb;
+  $('shIdeal').textContent=f(hi)+' → '+f(ideal);$('shOk').textContent=f(okU)+' pp';$('shInv').textContent=f(inv)+' pp';
+  let t,c;
+  if(fx>inv){t='INVALIDATO · sopra '+f(inv)+' pp: non entrare, esci';c='var(--warn)'}
+  else if(fx>=ideal){t='ZONA IDEALE · entra a scaglioni';c='var(--bear)'}
+  else if(fx>=okU){t=rebOk?'ZONA ACCETTABILE · discesa confermata: puoi entrare':'ZONA ACCETTABILE · aspetta la conferma della discesa';c=rebOk?'var(--bear)':'var(--warn)'}
+  else if(fx<=e2){t='ZONA USCITA 2 · sotto '+f(e2)+' pp (80%)';c='var(--muted)'}
+  else if(fx<=e1){t='ZONA USCITA 1 · sotto '+f(e1)+' pp (50%)';c='var(--muted)'}
+  else{t='FUORI ZONA · già in discesa, non inseguire';c='var(--muted)'}
+  S.textContent=t+' · ora '+f(fx)+' pp';S.style.color=c;S.style.fontWeight='700';S.style.fontSize='13px';
+  $('shReb').textContent='Discesa dal max degli ultimi 30 min: '+(Number.isFinite(reb)?f(-reb)+' pp · '+(rebOk?'confermata':'non ancora (serve −'+fmt(ENT.reb,2)+')'):'non calcolabile');
+  $('shEx').textContent='Uscita 1 (50%): '+f(e1)+' pp · Uscita 2 (80%): '+f(e2)+' pp';
+  $('shNote').textContent=(hyp?'Min ipotizzato '+f(ov)+' pp (reale '+f(mn.v)+')':'Min reale di sessione '+f(mn.v))+' · ampiezza '+fmt(amp,2)+' pp · zone = % dell\'ampiezza, non è un consiglio finanziario'
+}
+function renderGap(){
+  const g=lastGood;if(!g)return;
+  const r=g.r,ok=Number.isFinite(r.upRaw)&&Number.isFinite(r.dnRaw),gap=ok?r.dnRaw-r.upRaw:NaN,col=gap>0?'var(--bull)':gap<0?'var(--bear)':'var(--text)';
+  const G=$('cGap');G.textContent=ok?sgnFmt(gap,2)+' pp':'—';G.style.color=ok?col:'';
+  $('cUp').textContent=!ok?'—':r.up===0?'superata':fmt(r.up)+' pp';
+  $('cDn').textContent=!ok?'—':r.dn===0?'superata':fmt(r.dn)+' pp';
+  const S=g.sess,hm=t=>ROME_HM.format(new Date(t));
+  const mx=S&&S.max&&S.max.v>0?S.max:null,mn=S&&S.min&&S.min.v<0?S.min:null;
+  $('cMaxUp').textContent=mx?sgnFmt(mx.v,2)+' pp':'—';$('cMaxUp').style.color=mx?'var(--bull)':'';$('cMaxUpT').textContent=mx?'alle '+hm(mx.t):(S?'nessuno in sessione':'');
+  $('cMaxDn').textContent=mn?sgnFmt(mn.v,2)+' pp':'—';$('cMaxDn').style.color=mn?'var(--bear)':'';$('cMaxDnT').textContent=mn?'alle '+hm(mn.t):(S?'nessuno in sessione':'');
+  const R=g.run,rc=!R?'':R.sg>0?'var(--bull)':R.sg<0?'var(--bear)':'';
+  $('cRun').textContent=!R?'—':R.sg>0?'VERDE · SU':R.sg<0?'ROSSA · GIÙ':'PARI';$('cRun').style.color=rc;$('cRunT').textContent=R?'dalle '+hm(R.t0):'';
+  $('cRunMax').textContent=R?sgnFmt(R.mx.v,2)+' pp':'—';$('cRunMax').style.color=rc;$('cRunMaxT').textContent=R?'alle '+hm(R.mx.t):'';
+  $('cRunMin').textContent=R?sgnFmt(R.mn.v,2)+' pp':'—';$('cRunMin').style.color=rc;$('cRunMinT').textContent=R?'alle '+hm(R.mn.t):'';
+  const nu=S&&S.minUp,nd=S&&S.maxDn;
+  $('cMinUp').textContent=nu?sgnFmt(nu.v,2)+' pp':'—';$('cMinUp').style.color=nu?'var(--bull)':'';$('cMinUpT').textContent=nu?'alle '+hm(nu.t):(S?'nessuno in sessione':'');
+  $('cMinDn').textContent=nd?sgnFmt(nd.v,2)+' pp':'—';$('cMinDn').style.color=nd?'var(--bear)':'';$('cMinDnT').textContent=nd?'alle '+hm(nd.t):(S?'nessuno in sessione':'');
+  const bx=S&&S.bmax&&S.bmax.v>0?S.bmax:null,bn=S&&S.bmin&&S.bmin.v<0?S.bmin:null,bu=S&&S.bminUp,bd=S&&S.bmaxDn,none=S?'nessuno in sessione':'';
+  [['bMaxUp',bx,'var(--bull)'],['bMaxDn',bn,'var(--bear)'],['bMinUp',bu,'var(--bull)'],['bMinDn',bd,'var(--bear)']].forEach(([id,o,c])=>{
+    $(id).textContent=o?sgnFmt(o.v,2)+' pp':'—';$(id).style.color=o?c:'';$(id+'T').textContent=o?'alle '+hm(o.t):none});
+  const fx=R&&Number.isFinite(R.c0)&&Number.isFinite(R.g0)&&Number.isFinite(g.cNow??r.close)?R.g0+2*((g.cNow??r.close)-R.c0):NaN;
+  const mv=g.move&&g.move.v,mk=$('sMark'),ST=$('sTxt');
+  $('sMin').textContent=mn?sgnFmt(mn.v,2)+' pp':'—';$('sMin').style.color=mn?'var(--bear)':'';
+  $('sMax').textContent=mx?sgnFmt(mx.v,2)+' pp':'—';$('sMax').style.color=mx?'var(--bull)':'';$('sMinT').textContent=mn?'alle '+hm(mn.t):'';$('sMaxT').textContent=mx?'alle '+hm(mx.t):'';
+  $('sNow').textContent=Number.isFinite(fx)?sgnFmt(fx,2)+' pp':'—';$('sNow').style.color=Number.isFinite(fx)?(fx>0?'var(--bull)':fx<0?'var(--bear)':''):'';
+  if(Number.isFinite(fx)&&mx&&mn){const pc=Math.max(0,Math.min(100,(fx-mn.v)/(mx.v-mn.v)*100));mk.style.display='block';mk.style.left='calc('+pc+'% - 2px)';
+    ST.textContent=(pc<45?'Più vicino al min GIÙ':pc>55?'Più vicino al max SU':'A metà tra min e max')+(mv==='su'?' · ▲ sale':mv==='giu'?' · ▼ scende':mv==='fermo'?' · = fermo':'')+(fx<mn.v||fx>mx.v?' · oltre l\'estremo della sessione':'')}
+  const m15=$('sMark15'),TR=$('sTrail'),T5=$('sTxt5'),T15=$('sTxt15');m15.style.display='none';TR.style.display='none';T5.textContent='—';T15.textContent='—';
+  if(Number.isFinite(fx)&&mx&&mn&&R&&Number.isFinite(R.c0)){
+    const P=v=>Math.max(0,Math.min(100,(v-mn.v)/(mx.v-mn.v)*100)),p1=P(fx);
+    const at=(c,t,lab)=>{if(!Number.isFinite(c))return null;const y=t<R.t0,p=P(y?R.g0:R.g0+2*(c-R.c0)),d=p1-p;
+      return {p,d,txt:(y?'Dall\'inizio serie ('+hm(R.t0)+')':lab+' fa')+': '+fmt(p,0)+'% → ora '+fmt(p1,0)+'% · '+(Math.abs(d)<3?'= quasi fermo':d>0?'▲ verso max SU':'▼ verso min GIÙ')}};
+    const a5=at(g.c5,g.t5,'5 min'),a15=at(g.c15,g.t15,'15 min');
+    if(a5){T5.textContent=a5.txt;m15.style.display='block';m15.style.left='calc('+a5.p+'% - 4px)';
+      TR.style.display='block';TR.style.left=Math.min(a5.p,p1)+'%';TR.style.width=Math.abs(p1-a5.p)+'%';TR.style.background=a5.d>=3?'rgba(94,196,164,.8)':a5.d<=-3?'rgba(236,112,170,.8)':'rgba(255,255,255,.55)'}
+    if(a15)T15.textContent=a15.txt}
+  const EC={cur:NaN,lo:NaN,hi:NaN};
+  {const WMn=$('wMin'),WNw=$('wNow'),WMx=$('wMax'),WK=$('wMark'),WT=$('wTxt'),WZ=$('wZone'),WC=$('wCov'),WMnT=$('wMinT'),WNwT=$('wNowT'),WMxT=$('wMaxT');WZ.textContent='—';WC.textContent='—';WMnT.textContent='';WNwT.textContent='';WMxT.textContent='';$('wLen').textContent=WIN_MIN;WK.style.display='none';
+    // Finestra mobile: SOLO campioni reali dello scarto GIÙ − SU (uno per minuto completo, già calcolati dal file) + lo scarto attuale (cGap). Nessuna interpolazione né duplicazione.
+    // Min, max e posizione dell'indicatore derivano dalla stessa identica serie e dalla stessa finestra [fine − 30 min, fine].
+    let t='—',lo=NaN,hi=NaN,cur=ok?gap:NaN;
+    const WMS=WIN_MIN*60000,endT=Math.min(g.loadedAt,g.reg&&Number.isFinite(g.reg.end)?g.reg.end:Infinity),startT=endT-WMS;
+    if(Number.isFinite(cur)){
+      if(!g.winMg||!g.winMg.length){t='Servono i dati al minuto per questa finestra';WC.textContent='Dati al minuto non disponibili: nessun campione reale, finestra non calcolabile'}
+      else{
+        const ws=g.winMg.filter(o=>Number.isFinite(o.gp)&&o.t+60000>startT&&o.t+60000<=endT+1); // minuti completi che terminano dentro la finestra
+        const v=ws.map(o=>o.gp);v.push(cur);
+        lo=Math.min(...v);hi=Math.max(...v);
+        const tOf=x=>{for(let k=ws.length-1;k>=0;k--)if(ws[k].gp===x)return ws[k].t;return null}; // campione più recente con quel valore
+        const curMin=Math.floor(endT/60000)*60000;
+        const tLo=cur===lo?curMin:tOf(lo),tHi=cur===hi?curMin:tOf(hi);
+        WMnT.textContent=tLo!==null?'alle '+hm(tLo):'';WMxT.textContent=tHi!==null?'alle '+hm(tHi):'';WNwT.textContent='alle '+hm(curMin);
+        if(hi-lo<0.005)t=ws.length?'Nessun movimento negli ultimi '+WIN_MIN+' min':'Nessun campione reale precedente nella finestra: solo lo scarto attuale';
+        else{const pc=(cur-lo)/(hi-lo)*100;
+          WK.style.display='block';WK.style.left='calc('+pc+'% - 2px)';
+          t=pc>=99?'Sul massimo degli ultimi '+WIN_MIN+' min':pc<=1?'Sul minimo degli ultimi '+WIN_MIN+' min':(pc<45?'Più vicino al min':pc>55?'Più vicino al max':'A metà')+' degli ultimi '+WIN_MIN+' min · '+fmt(pc,0)+'%'}
+        // copertura: dati reali disponibili nella finestra
+        const first=ws.length?ws[0].t:null,have=ws.length,span=first===null?0:endT-first;
+        const full=first!==null&&first<=startT+60000,miss=full?Math.max(0,WIN_MIN-have):0;
+        if(first===null)WC.textContent='FINESTRA PARZIALE: nessun campione al minuto nei '+WIN_MIN+' min (solo lo scarto attuale) · orari italiani';
+        else if(!full)WC.textContent='FINESTRA PARZIALE: dati disponibili da '+fmtAge(span)+' (dalle '+hm(first)+') su '+WIN_MIN+' min · '+have+' campioni + attuale · orari italiani';
+        else WC.textContent=(miss>0?'FINESTRA CON BUCHI: ':'Finestra completa: ')+WIN_MIN+' min, dalle '+hm(Math.max(first,startT))+' alle '+hm(curMin)+' · '+have+' campioni + attuale'+(miss>0?' ('+miss+' minuti senza dato, non inventati)':'')+' · orari italiani'}}
+    const col=v=>Number.isFinite(v)?(v>0?'var(--bull)':v<0?'var(--bear)':''):'';
+    WMn.textContent=Number.isFinite(lo)?sgnFmt(lo,2)+' pp':'—';WMn.style.color=col(lo);WMx.textContent=Number.isFinite(hi)?sgnFmt(hi,2)+' pp':'—';WMx.style.color=col(hi);
+    WNw.textContent=Number.isFinite(cur)?sgnFmt(cur,2)+' pp':'—';WNw.style.color=col(cur);WT.textContent=t;EC.cur=cur;EC.lo=lo;EC.hi=hi;
+    if(Number.isFinite(fx)&&R&&Number.isFinite(R.c0)&&g.winOk&&g.winZ&&g.winZ.length>=2){
+      const z=g.winZ.map(o=>R.g0+2*(o.c-R.c0)),zl=Math.min(...z,fx),zh=Math.max(...z,fx);
+      if(zh-zl<0.005)WZ.textContent='Dall\'inizio dei dati (sessione): nessun movimento';
+      else{ // dall'inizio dei dati di oggi (pre-market incluso): ogni minuto pesa uguale; zona verde/rossa rispetto al min/max di questo intervallo
+        const now=Date.now();let wv=0,wr=0,wm=0;
+        g.winZ.forEach((o,k)=>{const wt=1,pz=(z[k]-zl)/(zh-zl)*100;if(pz>55)wv+=wt;else if(pz<45)wr+=wt;else wm+=wt});
+        const tot=wv+wr+wm,n=g.winZ.length;
+        WZ.textContent=tot>0?'Da inizio dati ('+n+' min, '+hmsDay(g.winZ[0].t).slice(-8,-3)+') · verde (vicino al max): '+fmt(wv/tot*n,0)+' min · rossa (vicino al min): '+fmt(wr/tot*n,0)+' min · metà: '+fmt(wm/tot*n,0)+' min':'—'}}}
+  if(!(Number.isFinite(fx)&&mx&&mn)){mk.style.display='none';ST.textContent=Number.isFinite(fx)?'Serve almeno un max SU e un min GIÙ in sessione':'—'}
+  renderEntry(fx,mn,mx,EC);
+  renderShort(fx,mn,mx,EC);
+  $('cNear').textContent=!ok?'—':gap>0?'SU':gap<0?'GIÙ':'pari';
+  const m=g.move,M=$('cMove');
+  M.textContent=!m?'primo aggiornamento':m.v==='skip'?MV_TXT.skip:MV_TXT[m.v]+' · ultimi '+m.dt+' s';
+  M.style.color=!m||m.v==='skip'||m.v==='fermo'?'':m.v==='su'?'var(--bull)':'var(--bear)';
+}
+$('shMin').addEventListener('input',()=>{try{renderGap()}catch(e){}});
+$('entMax').addEventListener('input',()=>{try{renderGap()}catch(e){}});
+function updUpd(g,now){
+  const sec=Number($('refresh').value);let t;
+  if(stopped)t='fermo';else if(busy)t='aggiornamento in corso…';
+  else if(sec>0)t='prossimo tra '+Math.max(0,Math.ceil(sec-(now-g.loadedAt)/1000))+' s';else t='manuale';
+  $('cUpd').textContent=hms(g.loadedAt)+' · '+t;
+}
+
+const MAXCMP={'1m':180,'5m':900,'15m':2700,'30m':5400,'60m':10800,'1d':21600}; // età massima (s) della misurazione precedente per un confronto omogeneo
+// Riferimenti separati: stessa candela (confronto omogeneo) e candela precedente (la finestra di 10 barre è scorsa: NON omogeneo).
+function refCmp(e,now,key){
+  if(!e)return {st:'none'};
+  const dt=Math.round((now-e.at)/1000);
+  if(dt<0)return {st:'bad',dt,prevAt:e.at};
+  return dt>MAXCMP[key.split('|')[1]]?{st:'old',dt,prevAt:e.at}:{st:'ok',dt,prevAt:e.at,ix:e.ix};
+}
+// ctx = {prevBar: apertura della barra immediatamente precedente nei dati scaricati, step: durata barra (ms)}
+function indexCompare(hist,key,ix,candle,now,ctx){
+  if(!Number.isFinite(ix))return {na:true};
+  const L=hist&&hist.key===key?hist.list:[],prev=L.filter(e=>e.candle<candle).sort((a,b)=>b.candle-a.candle)[0];
+  const f=e=>{const c=refCmp(e,now,key);if(c.st==='ok')c.d=ix-c.ix;return c};
+  const d=f(prev);
+  if(prev){d.cand=prev.candle;const pb=ctx?ctx.prevBar:null;
+    if(!Number.isFinite(pb)||prev.candle>pb)d.adj='unk';
+    else if(prev.candle<pb){d.adj='missed';d.prevBar=pb}                 // la candela immediatamente precedente non è mai stata misurata
+    else{const gb=ctx.step?Math.round((candle-pb)/ctx.step)-1:0;d.adj=gb>0?'gap':'adj';d.gapBars=gb} // gap: mancano barre attese tra le due candele
+  }
+  return {same:f(L.find(e=>e.candle===candle)),diff:d};
+}
+function pushIdx(hist,key,ix,candle,at){
+  const h=hist&&hist.key===key?hist:{key,list:[]},L=h.list.filter(e=>e.candle!==candle);
+  L.push({candle,at,ix});L.sort((a,b)=>a.candle-b.candle);return {key,list:L.slice(-6)};
+}
+function comboReading(pc,mc,ix){
+  const f=Number.isFinite;
+  if(!f(ix)||!f(pc)||!f(mc))return {dir:'—',disc:'—',isDisc:false};
+  const a=Math.abs(ix),dir=a<0.5?'neutra':(ix>0?'SU':'GIÙ')+' · '+(a<20?'debole':a<60?'moderata':'forte')+' ('+fmt(a,0)+')';
+  if(pc===0||mc===0)return {dir,disc:'una componente è nulla: nessuna discordanza',isDisc:false};
+  if(pc*mc>0)return {dir,disc:'concordi ('+(pc>0?'Pace e MACD entrambi SU':'Pace e MACD entrambi GIÙ')+')',isDisc:false};
+  const P=Math.abs(pc),M=Math.abs(mc),w=P>M?'Pace':M>P?'MACD':null;
+  return {dir,isDisc:true,disc:'DISCORDANZA: Pace '+(pc>0?'SU':'GIÙ')+' ('+fmt(P,0)+') contro MACD '+(mc>0?'SU':'GIÙ')+' ('+fmt(M,0)+'); '+(w?'prevale numericamente '+w+' di '+fmt(Math.abs(P-M),0)+' punti, l\'indice netto ne segue il segno':'pareggio numerico, indice netto 0')};
+}
+function renderCombo(g){
+  const r=g.r,ix=r.comboIndex,c=r.idxCmp||{st:'wait'},pc=r.paceComponent,mc=r.macdComponent;
+  const ixEl=$('comboIndex');ixEl.textContent=Number.isFinite(ix)?sgnFmt(ix,0):'—';
+  ixEl.className='index-value '+(!Number.isFinite(ix)?'index-neutral':ix>10?'index-up':ix< -10?'index-down':'index-neutral');
+  const D=$('comboDelta'),S=c.same,F=c.diff,tm=hmsDay;
+  const adjTxt=x=>x.adj==='adj'?'candela immediatamente precedente, ma non omogeneo (la finestra di 10 barre è scorsa)':x.adj==='gap'?'SALTO TEMPORALE: tra le due candele mancano '+x.gapBars+' barre attese (pausa di sessione o dati assenti), non omogeneo':x.adj==='missed'?'CANDELA SALTATA: la candela immediatamente precedente ('+tm(x.prevBar)+') non è mai stata misurata, riferimento più vecchio, non omogeneo':'continuità tra le candele non verificabile, non omogeneo';
+  const fmtRef=(x,isDiff)=>{
+    if(!x||x.st==='none')return 'nessuna misurazione valida precedente';
+    const span='misurazione '+tm(x.prevAt)+' → '+tm(g.loadedAt)+' ('+fmtAge(x.dt*1000)+')'+(isDiff&&x.cand?' · candela '+tm(x.cand)+' → '+tm(g.last.time):'');
+    if(x.st==='old'||x.st==='bad')return span+' · '+(x.st==='bad'?'riferimento con orario successivo, non valido':'precedente troppo vecchia (massimo '+fmtAge(MAXCMP[g.interval]*1000)+')')+': non confrontata';
+    return span+' · '+(Math.abs(x.d)<0.5?'invariato':(x.d>0?'▲ aumentato ':'▼ diminuito ')+sgnFmt(x.d,1))+(isDiff?' ⚠ '+adjTxt(x):'');
+  };
+  const lab=(x,w)=>(Math.abs(x.d)<0.5?'INDICE INVARIATO ':x.d>0?'▲ INDICE AUMENTATO ':'▼ INDICE DIMINUITO ')+sgnFmt(x.d,1)+(!w?' · stessa candela':x.adj==='adj'?' · candela precedente ⚠ non omogeneo':' · ⚠ '+(x.adj==='gap'?'SALTO TEMPORALE':x.adj==='missed'?'CANDELA SALTATA':'continuità non verificabile')+', non omogeneo');
+  if(c.late){D.textContent='CONFRONTO SOSPESO';$('comboCmp').textContent=(c.why||'dati non aggiornati')+': riferimento non aggiornato, nessun confronto';$('comboCmp2').textContent='—'}
+  else if(c.na){D.textContent='—';$('comboCmp').textContent='indice non valido: nessun confronto';$('comboCmp2').textContent='—'}
+  else{
+    $('comboCmp').textContent=fmtRef(S,false);$('comboCmp2').textContent=fmtRef(F,true);
+    const bad=x=>x&&(x.st==='old'||x.st==='bad');
+    D.textContent=S.st==='ok'?lab(S,false):F.st==='ok'?lab(F,true):(bad(S)||bad(F))?'CONFRONTO NON DISPONIBILE':'IN ATTESA DI CONFRONTO';
+  }
+  const rd=comboReading(pc,mc,ix),disc=rd.isDisc;$('comboDir').textContent=rd.dir;$('comboDisc').textContent=rd.disc;$('comboDisc').style.color=disc?'var(--warn)':'';
+  $('comboMeaning').textContent=!Number.isFinite(ix)?'Dati insufficienti':disc?'DISCORDANZA':ix>=60?'Spinta SU forte':ix>=20?'Spinta SU':ix<=-60?'Spinta GIÙ forte':ix<=-20?'Spinta GIÙ':'Spinta debole/mista';
+  $('paceComponent').textContent=Number.isFinite(pc)?sgnFmt(pc,1):'—';
+  $('macdComponent').textContent=Number.isFinite(mc)?sgnFmt(mc,1)+(r.macdDir?' · istogramma '+(r.macdHist>0?'positivo':r.macdHist<0?'negativo':'nullo')+', '+r.macdDir:''):'—';
+  $('comboState').textContent=r.idxWhy||'—';
+  // spinta 1–100: scala descrittiva dell'indice (50 = neutra), NON una probabilità
+  const P=$('comboPush');
+  if(Number.isFinite(ix)){
+    const n=Math.min(100,Math.max(1,Math.round((ix+100)/2)));
+    P.textContent=n+' / 100 · scala descrittiva, non probabilità';
+    P.style.color=n>=55?'var(--bull)':n<=45?'var(--bear)':'';
+  }else{P.textContent='—';P.style.color=''}
+}
+
+// ---------- ANTICIPAZIONE PREZZO ----------
+// Sola lettura: lo scarto (GIÙ − SU) resta quello originale (rawDistance). Campioni dal vivo, uno per aggiornamento riuscito e attuale; nessun campione inventato.
+const ANT_W=[30,60,180],ANT_KEEP=900000,ANT_MINGAP=5000,ANT_PERSIST=2,ANT_SCORE_MIN=25,ANT_COOL=120000,ANT_LOG_MAX=300,ANT_QMAX=60000,ANT_VER=2,EVAL_ATR=0.05,EVAL_H=[5,10,15],EVAL_TOL=90000;
+// pesi: velocità, accelerazione e prezzo derivano dalla stessa serie; il prezzo pesa 5% (20% solo se la velocità dello scarto non è disponibile e il prezzo è l'unica misura del movimento)
+const antWt=v=>({pos:.25,vel:.30,acc:.20,macd:.20,px:v?.05:.20});
+const ANT_LAB={SU:'PREALLARME SU',GIU:'PREALLARME GIÙ',INV_SU:'INVERSIONE IN FORMAZIONE · verso SU',INV_GIU:'INVERSIONE IN FORMAZIONE · verso GIÙ',ATT:'ATTESA'};
+let antBuf=[],antKey=null,antPrev=null,antStreak=0,antConf='ATT',antLog=[],antLastEv=null,antDim=false,antConfT=0;
+try{const x=JSON.parse(localStorage.getItem('agAntLog')||'[]');if(Array.isArray(x))antLog=x.filter(e=>e&&typeof e.key==='string'&&Number.isFinite(e.t0)&&(e.dir===1||e.dir===-1)&&Number.isFinite(e.px)&&Number.isFinite(e.atr)&&e.res&&typeof e.res==='object')}catch(e){antLog=[]}
+const antSave=()=>{try{localStorage.setItem('agAntLog',JSON.stringify(antLog))}catch(e){}};
+// Cronologia dei segnali CONFERMATI (separata dallo storico delle previsioni): direzione/stato, inizio, fine, motivo della cessazione, stato subentrato.
+// All'apertura nessun segnale può essere attivo: quelli rimasti aperti sono chiusi come «interrotti» all'ultimo campione valido, mai come attivi.
+const ANT_SIG_MAX=100;let antSigs=[];
+try{const x=JSON.parse(localStorage.getItem('agAntSig')||'[]');if(Array.isArray(x))antSigs=x.filter(e=>e&&typeof e.key==='string'&&ANT_LAB[e.state]&&Number.isFinite(e.t0))}catch(e){antSigs=[]}
+{let ch=false;for(const e of antSigs)if(e.t1==null||!Number.isFinite(e.t1)){e.t1=Number.isFinite(e.last)?e.last:e.t0;e.next=null;e.why='interrotto: pagina chiusa o aggiornata, esito non più verificabile';e.interrupted=true;ch=true}
+  if(ch)try{localStorage.setItem('agAntSig',JSON.stringify(antSigs))}catch(e){}}
+const antSigSave=()=>{try{localStorage.setItem('agAntSig',JSON.stringify(antSigs))}catch(e){}};
+const antOpen=key=>{for(let i=antSigs.length-1;i>=0;i--)if(antSigs[i].key===key&&antSigs[i].t1==null)return antSigs[i];return null};
+const antLastClosed=key=>{for(let i=antSigs.length-1;i>=0;i--)if(antSigs[i].key===key&&antSigs[i].t1!=null)return antSigs[i];return null};
+function antSigStart(key,state,t){antSigs.push({id:t,key,state,dir:state.endsWith('SU')?1:-1,t0:t,last:t,t1:null,next:null,why:null});if(antSigs.length>ANT_SIG_MAX)antSigs.splice(0,antSigs.length-ANT_SIG_MAX);antSigSave()}
+function antSigEnd(key,t,next,why){const e=antOpen(key);if(!e)return;e.t1=Math.max(t,e.t0);e.next=next;e.why=String(why||'').slice(0,220);antSigSave()}
+function antSigBeat(key,t){const e=antOpen(key);if(e&&t>e.last){e.last=t;antSigSave()}}
+function antReset(){if(antKey&&antConf!=='ATT')antSigEnd(antKey,Date.now(),'ATT','selezione cambiata o ricaricata');antBuf=[];antKey=null;antPrev=null;antStreak=0;antConf='ATT';antLastEv=null;antConfT=0}
+function atrRankAt(s,i){const a=[];for(let j=Math.max(0,i-99);j<=i;j++)if(Number.isFinite(s.atr[j]))a.push(s.atr[j]);return a.length>=30&&Number.isFinite(s.atr[i])?a.filter(x=>x<s.atr[i]).length/a.length*100:null}
+const sgn0=v=>v>0?1:v<0?-1:0;
+// Soglia di rumore dello scarto in punti per un intervallo di sec secondi: k × deviazione standard ATTESA (stima euristica, non calibrata su dati reali):
+// sigma_prezzo(5 min) ≈ 0,75 ATR, scala con la radice del tempo; lo scarto si muove ≈ 2× il prezzo nella stessa candela. k = 0,5 / 0,69 / 1,0 in base alla sensibilità scelta.
+const antTh=(atr,mv,sec)=>Math.min(1,Math.max(.5,.5+(mv-.02)/.08*.5))*1.5*atr*Math.sqrt(sec/300);
+// campione più vicino a (t − sec), strettamente precedente a t, entro tol ms; null se manca (mai interpolato). Tutti i tempi sono orari di quotazione.
+const antTol=s=>Math.max(6000,.2*s*1000);
+// Stato MACD: istogramma (segno) × pendenza (già calcolata dall'indice). loses = perde forza pur mantenendo il segno (positivo in diminuzione / negativo in aumento).
+function antMacdSt(mh,ms){
+  if(!Number.isFinite(mh))return null;const sg=sgn0(mh),S=sg>0?'SU':'GIÙ';
+  if(!sg)return {sg,ms,loses:false,txt:'istogramma nullo'+(ms>0?', in aumento':ms<0?', in diminuzione':', stabile')};
+  if(!ms)return {sg,ms,loses:false,txt:(sg>0?'positivo':'negativo')+', stabile'};
+  if(sg>0&&ms>0)return {sg,ms,loses:false,txt:'positivo e in aumento'};
+  if(sg<0&&ms<0)return {sg,ms,loses:false,txt:'negativo e in diminuzione'};
+  return {sg,ms,loses:true,txt:(sg>0?'positivo ma in diminuzione':'negativo ma in aumento')+' · PERDE FORZA (segno ancora '+S+')'};
+}
+function antPick(buf,t,sec,tol){let b=null,bd=Infinity;const tg=t-sec*1000;for(const s of buf){if(s.t>=t)continue;const d=Math.abs(s.t-tg);if(d<bd){bd=d;b=s}}return b&&bd<=tol?b:null}
+// Velocità V = Δscarto/Δt (pt/min). Accelerazione A = (V1 − V2)/Δt tra i centri dei due intervalli (pt/min²): V1 su [a,cur], V2 su [b,a], distinti e non sovrapposti.
+function antWin(buf,cur,sec,mv){
+  const tol=antTol(sec),w={sec,tol,ok:false,pxOk:false},a=antPick(buf,cur.t,sec,tol);
+  if(!a){w.why='NON DISPONIBILE · nessun campione a '+sec+' s ±'+fmt(tol/1000,0)+' s';return w}
+  const dt=(cur.t-a.t)/1000,T=antTh(cur.atr,mv,dt);w.dt=dt;w.a=a;
+  w.pxD=cur.px-a.px;w.pxT=T/2;w.pxDir=Math.abs(w.pxD)>w.pxT?sgn0(w.pxD):0;w.pxOk=true; // il prezzo è confrontabile anche tra candele diverse
+  if(a.cd!==cur.cd){w.why='NON DISPONIBILE · candela diversa (confronto non omogeneo)';return w}
+  w.ok=true;w.d=cur.gp-a.gp;w.vpm=w.d/(dt/60);w.T=T;w.dir=Math.abs(w.d)>T?sgn0(w.d):0;
+  const b=antPick(buf,a.t,sec,tol);
+  if(!b)w.accWhy='NON DISPONIBILE · manca l\'intervallo precedente di '+sec+' s';
+  else if(b.cd!==cur.cd)w.accWhy='NON DISPONIBILE · candela diversa nell\'intervallo precedente';
+  else{const dt2=(a.t-b.t)/1000,T2=antTh(cur.atr,mv,dt2),v2=(a.gp-b.gp)/(dt2/60),dm=((cur.t+a.t)/2-(a.t+b.t)/2)/60000,vT=Math.hypot(T/(dt/60),T2/(dt2/60));
+    w.v2=v2;w.dt2=dt2;w.dm=dm;w.acc=(w.vpm-v2)/dm;w.thA=vT/dm;w.accDir=Math.abs(w.acc)>w.thA?sgn0(w.acc):0;w.spd=Math.abs(w.vpm)-Math.abs(v2);w.spdDir=Math.abs(w.spd)>vT?sgn0(w.spd):0}
+  return w;
+}
+function antEval(buf,cur,mv){
+  const W=ANT_W.map(s=>antWin(buf,cur,s,mv)),[w30,w60,w180]=W,atr=cur.atr,gap=cur.gp,fin=Number.isFinite,T=Math.tanh;
+  let old=null; // direzione precedente: scarto da −3 min a −1 min (stessa candela)
+  if(w180.ok&&w60.ok){const dt=(w60.a.t-w180.a.t)/1000;if(dt>=60){const d=w60.a.gp-w180.a.gp,Th=antTh(atr,mv,dt);old={d,dir:Math.abs(d)>Th?sgn0(d):0,T:Th,dt}}}
+  const C={},accW=[w30,w60].find(x=>x.ok&&fin(x.acc))||null;
+  C.pos=T(gap/atr);
+  {let s=0,k=0;[[w30,.4],[w60,.35],[w180,.25]].forEach(([w,p])=>{if(w.ok){s+=p*T(w.d/(2*w.T));k+=p}});C.vel=k?s/k:null}
+  C.acc=accW?T(accW.acc/(2*accW.thA)):null;
+  C.macd=fin(cur.mc)?Math.max(-1,Math.min(1,.7*cur.mc/100+.3*cur.ms)):null;
+  {let s=0,k=0;[[w60,.6],[w180,.4]].forEach(([w,p])=>{if(w.pxOk){s+=p*T(w.pxD/(2*w.pxT));k+=p}});C.px=k?s/k:null}
+  const WT=antWt(C.vel!==null);let tw=0;for(const k in C)if(C[k]!==null)tw+=WT[k];
+  const contrib={};let score=null;
+  if(tw>0){score=0;for(const k in C){contrib[k]=C[k]===null?null:100*WT[k]/tw*C[k];if(contrib[k]!==null)score+=contrib[k]}}
+  const mhS=fin(cur.mh)?sgn0(cur.mh):null,msx=antMacdSt(cur.mh,cur.ms);
+  const chk=d=>({vel:w30.ok&&w60.ok&&w30.dir===d&&w60.dir===d,acc:!!accW&&accW.acc*d>=-accW.thA,macd:mhS!==null&&((mhS===d&&cur.ms!==-d)||cur.ms===d),score:score!==null&&score*d>=ANT_SCORE_MIN,px:!(w60.pxOk&&w60.pxDir===-d)});
+  let cand='ATT',why='',nd=0;
+  if(old&&old.dir&&w30.ok&&w60.ok&&w30.dir===-old.dir&&w60.dir===-old.dir&&!(w180.pxOk&&w180.pxDir===-old.dir)){nd=-old.dir;cand=nd>0?'INV_SU':'INV_GIU';
+    why='Direzione precedente '+(old.dir>0?'SU':'GIÙ')+' (da −3 min a −1 min: Δ '+sgnFmt(old.d,2)+') contraddetta da 30 s e 1 min; il prezzo non ha ancora completato il rovesciamento'}
+  else for(const d of [1,-1]){const c=chk(d);if(c.vel&&c.acc&&c.macd&&c.score&&c.px){nd=d;cand=d>0?'SU':'GIU';why='Soddisfatti: velocità 30 s e 1 min, accelerazione, MACD, punteggio ≥ '+ANT_SCORE_MIN+', prezzo non contrario';break}}
+  if(cand==='ATT'){
+    if(!(w30.ok&&w60.ok))why='Finestre 30 s / 1 min: '+(w30.ok?'':'30 s — '+w30.why)+(w30.ok||w60.ok?'':' · ')+(w60.ok?'':'1 min — '+w60.why);
+    else{const d=w60.dir||w30.dir;if(!d)why='Scarto stabile entro il rumore: nessun vantaggio in formazione';
+      else{const c=chk(d),f=[];if(!c.vel)f.push('velocità 30 s e 1 min non concordi');if(!c.acc)f.push(accW?'accelerazione contraria':'accelerazione non calcolabile');if(!c.macd)f.push(msx&&msx.loses&&msx.sg===d?'MACD perde forza (segno ancora '+(d>0?'SU':'GIÙ')+', istogramma in indebolimento)':'MACD non concorde');if(!c.score)f.push('punteggio sotto '+ANT_SCORE_MIN);if(!c.px)f.push('prezzo contrario');why='Direzione '+(d>0?'SU':'GIÙ')+' non confermata: '+(f.join(', ')||'—')}}}
+  const dsug=nd||w60.dir||w30.dir||(score!==null&&Math.abs(score)>=10?sgn0(score):0),wd=w60.ok?w60:w30.ok?w30:null,pw=w60.pxOk?w60:w30.pxOk?w30:null;
+  let ps='ND';
+  if(dsug&&wd&&wd.dir===dsug&&pw)ps=pw.pxDir===dsug?'FAV':pw.pxDir===-dsug?'CONTRO':'ANTICIPA';
+  else if(old&&old.dir&&w60.ok&&w60.dir!==old.dir)ps='PERDITA';
+  return {cur,W,old,C,wt:WT,msx,contrib,score,cov:tw,cand,why,dsug,ps,pw};
+}
+function antVerify(key,cur){ // esito = primo campione attuale DOPO la scadenza (entro EVAL_TOL); mai dati futuri nel segnale
+  let ch=false;
+  for(const e of antLog){if(e.key!==key)continue;
+    for(const h of EVAL_H){if(e.res[h])continue;const tg=e.t0+h*60000;if(cur.t<tg)continue;
+      if(cur.t<=tg+EVAL_TOL){const m=(cur.px-e.px)*e.dir,th=EVAL_ATR*e.atr;e.res[h]={t:cur.t,px:cur.px,mv:m,st:m>th?'ok':m<-th?'bad':'flat'}}
+      else e.res[h]={miss:true};
+      ch=true}}
+  if(ch)antSave();
+}
+const antCond=(cur,d)=>(Number.isFinite(cur.ar)?(cur.ar<33.4?'vol. bassa':cur.ar>66.6?'vol. alta':'vol. media'):'vol. n.d.')+' · '+(Number.isFinite(cur.pace)?'Pace '+(cur.pace*d>0?'concorde':'contrario'):'Pace n.d.');
+function antStep(key,r,last,reg,now,fresh,mv,qt){
+  if(antKey!==key){antReset();antKey=key}
+  const open=!!reg&&now>=reg.start&&now<reg.end,gp=r.dnRaw-r.upRaw,qage=Number.isFinite(qt)?now-qt:NaN;let why=null;
+  if(!open)why='Mercato chiuso o sessione non attiva: nessun campione registrato, nessun segnale.';
+  else if(!fresh)why='Dati non aggiornati (vedi «Stato dati»): nessun campione registrato, nessun segnale.';
+  else if(!Number.isFinite(qt))why='Yahoo non indica l\'orario dell\'ultima quotazione: attualità non verificabile, nessun segnale.';
+  else if(Math.abs(qage)>ANT_QMAX)why='Quotazione obsoleta: l\'ultima è delle '+hms(qt)+' ('+fmtAge(Math.abs(qage))+' fa, massimo '+ANT_QMAX/1000+' s). Una richiesta HTTP riuscita non basta: nessun campione, nessun segnale.';
+  else if(!(Number.isFinite(gp)&&Number.isFinite(r.close)&&r.atr>0))why='Scarto non calcolabile: nessun segnale.';
+  if(why){if(antConf!=='ATT')antSigEnd(key,now,'ATT','dati non attuali · '+why);antPrev=null;antStreak=0;antConf='ATT';antConfT=0;antLastEv=null;return {off:true,why}} // dati non attuali: l'eventuale preallarme decade
+  const L=antBuf[antBuf.length-1];
+  if(L&&qt<=L.t&&antLastEv)return antLastEv; // stessa quotazione: nessun campione nuovo, nessuna nuova valutazione
+  const cur={t:qt,gp,px:r.close,atr:r.atr,cd:last.time,mh:r.macdHist,mc:r.macdComponent,ms:r.macdDir==='in aumento'?1:r.macdDir==='in diminuzione'?-1:0,pace:r.pace,ar:r.atrRank};
+  if(L&&qt<=L.t)return {off:true,why:'Quotazione non successiva all\'ultimo campione: ignorata.'};
+  if(L&&qt-L.t<ANT_MINGAP)antBuf[antBuf.length-1]=cur;else antBuf.push(cur);
+  while(antBuf.length&&qt-antBuf[0].t>ANT_KEEP)antBuf.shift();
+  antVerify(key,cur); // prima i vecchi preallarmi, poi quello nuovo: un campione non verifica se stesso
+  const ev=antEval(antBuf,cur,mv);
+  antStreak=ev.cand===antPrev?antStreak+1:1;antPrev=ev.cand;
+  const conf=antStreak>=ANT_PERSIST?ev.cand:antConf;
+  if(conf!==antConf){if(antConf!=='ATT')antSigEnd(key,qt,conf,ev.why);antConf=conf;antConfT=qt;if(conf!=='ATT')antSigStart(key,conf,qt);
+    if(conf!=='ATT'){const dir=conf.endsWith('SU')?1:-1;
+      if(!antLog.some(e=>e.key===key&&e.dir===dir&&qt-e.t0<ANT_COOL)){antLog.push({id:qt,ver:ANT_VER,key,t0:qt,dir,type:conf.startsWith('INV')?'inversione':'preallarme',px:cur.px,atr:cur.atr,score:ev.score,cond:antCond(cur,dir),res:{}});
+        if(antLog.length>ANT_LOG_MAX)antLog.splice(0,antLog.length-ANT_LOG_MAX);antSave()}}}
+  if(antConf!=='ATT')antSigBeat(key,qt);
+  ev.conf=conf;ev.streak=antStreak;ev.since=antConfT;antLastEv=ev;return ev;
+}
+function antStats(list,h){
+  let n=0,ok=0,bad=0,flat=0,miss=0,sf=0,sc=0;
+  for(const e of list){const r=e.res[h];if(!r)continue;if(r.miss){miss++;continue}n++;if(r.st==='ok'){ok++;sf+=r.mv}else if(r.st==='bad'){bad++;sc+=r.mv}else flat++}
+  return {n,ok,bad,flat,miss,pct:n?ok/n*100:NaN,af:ok?sf/ok:NaN,ac:bad?sc/bad:NaN,pend:list.filter(e=>!e.res[h]).length};
+}
+function antHist(key){
+  const P=$('antStats'),Q=$('antList');P.textContent='';Q.textContent='';
+  const row=(par,a,b)=>{const d=document.createElement('div'),s=document.createElement('span'),v=document.createElement('b');s.textContent=a;v.textContent=b;d.appendChild(s);d.appendChild(v);par.appendChild(d)};
+  const E=antLog.filter(e=>e.key===key&&e.ver===ANT_VER),oldN=antLog.filter(e=>e.key===key&&e.ver!==ANT_VER).length;
+  if(oldN)row(P,'Segnali della versione precedente',''+oldN+' registrati, non modificati, esclusi dalle statistiche (accelerazione e pesi diversi)');
+  // corretti = oltre +0,05 ATR a favore; contrari = oltre 0,05 ATR contro; piatti = entro ±0,05 ATR; non verificabili = nessun campione attuale entro 90 s dalla scadenza
+  const fm=s=>'corretti '+s.ok+' · contrari '+s.bad+' · piatti '+s.flat+' · non verificabili '+s.miss+(s.pend?' · in attesa '+s.pend:'')+(s.n?' → '+fmt(s.pct,0)+'% corretti sui verificati ('+s.ok+'/'+s.n+') · mov. favorevole medio '+sgnFmt(s.af,2)+' · contrario medio '+sgnFmt(s.ac,2)+' pp':'');
+  const pa=E.filter(e=>e.type==='preallarme'),iv=E.filter(e=>e.type==='inversione');
+  [['Preallarmi SU',pa.filter(e=>e.dir>0),1],['Preallarmi GIÙ',pa.filter(e=>e.dir<0),1],['Inversioni verso SU',iv.filter(e=>e.dir>0),0],['Inversioni verso GIÙ',iv.filter(e=>e.dir<0),0]].forEach(([n,l,always])=>{
+    if(!l.length&&!always)return;row(P,n,l.length+' registrati');
+    if(l.length)EVAL_H.forEach(h=>row(P,'· dopo '+h+' min',fm(antStats(l,h))))});
+  const cs=[...new Set(E.map(e=>e.cond))].sort();
+  cs.forEach(c=>{const l=E.filter(e=>e.cond===c);row(P,c+' ('+l.length+')',EVAL_H.map(h=>{const s=antStats(l,h);return h+'m '+(s.n?fmt(s.pct,0)+'% ('+s.n+')':'—')}).join(' · '))});
+  E.slice(-8).reverse().forEach(e=>row(Q,hmsDay(e.t0)+' · '+(e.dir>0?'▲ SU':'▼ GIÙ')+' '+e.type,'@ '+fmt(e.px)+' · '+EVAL_H.map(h=>{const x=e.res[h];return h+'m '+(!x?'…':x.miss?'n.d.':sgnFmt(x.mv,2))}).join(' · ')));
+}
+const ANT_IDS=['antMacdS','antOld','antNew','antLight','antScore','antGap','antFav','antV30','antV60','antV180','antA30','antA60','antA180','antMacd','antPxC','antPxD','antCpos','antCvel','antCacc','antCmacd','antCpx'];
+function antClear(){ANT_IDS.forEach(id=>{$(id).textContent='—'});$('antWhy').textContent='';$('antScore').className='index-value index-neutral';$('antLight').className='mv fermo';$('antLight').style.color='';$('antStats').textContent='';$('antList').textContent='';$('antSigList').textContent=''}
+function antQuoteOld(){const g=lastGood;return !!(g&&g.ant&&!g.ant.off&&Date.now()-g.ant.cur.t>ANT_QMAX)}
+function antStaleMark(on){
+  const q=antQuoteOld(),bad=!!on||q;
+  $('antPanel').classList.toggle('stale',bad);
+  $('antStale').textContent=!bad?'':q?'⚠ QUOTAZIONE OBSOLETA: ultima quotazione delle '+hms(lastGood.ant.cur.t)+' ('+fmtAge(Date.now()-lastGood.ant.cur.t)+' fa): preallarme NON utilizzabile.':'⚠ SEGNALE NON AGGIORNATO: ultimo valore valido di '+(lastGood?hms(lastGood.loadedAt):'—')+' (ora italiana), non utilizzabile.';
+  if(bad&&lastGood&&lastGood.ant&&!lastGood.ant.off){antDim=true;$('antLight').textContent='NON UTILIZZABILE · dati non aggiornati';$('antLight').className='mv fermo';$('antLight').style.color=''}
+  else if(!bad&&antDim){antDim=false;if(lastGood)renderAnt(lastGood)}
+}
+const antEndTxt=p=>(p.why||'—')+(p.next&&p.next!=='ATT'?' · subentrato: '+ANT_LAB[p.next]:p.next==='ATT'?' · poi: ATTESA':'');
+const antPrevTxt=p=>'CONCLUSO · '+ANT_LAB[p.state]+' · '+hmsDay(p.t0)+' → '+hmsDay(p.t1)+' · cessazione: '+antEndTxt(p);
+function antSigHist(key){
+  const P=$('antSigList');P.textContent='';
+  const row=(a,b)=>{const d=document.createElement('div'),s=document.createElement('span'),v=document.createElement('b');s.textContent=a;v.textContent=b;d.appendChild(s);d.appendChild(v);P.appendChild(d)};
+  const E=antSigs.filter(e=>e.key===key).slice(-10).reverse();
+  if(!E.length){row('Segnali confermati','nessuno registrato per questa selezione');return}
+  E.forEach(e=>row(hmsDay(e.t0)+(e.t1==null?'':' → '+hmsDay(e.t1)),e.t1==null?'ATTIVO ORA · '+ANT_LAB[e.state]+' · da '+fmtAge(Date.now()-e.t0):'CONCLUSO · '+ANT_LAB[e.state]+' · durata '+fmtAge(e.t1-e.t0)+' · cessazione: '+antEndTxt(e)))
+}
+function antSigRows(A,key){
+  const on=A&&!A.off,c=on?A.conf:'ATT',p=antLastClosed(key);let o=p?antPrevTxt(p):'—',n='—';
+  if(on&&c!=='ATT'&&A.cand!==c){o=ANT_LAB[c]+' dalle '+hms(A.since)+' · IN DISCUSSIONE: non più pienamente confermato';n=(A.cand==='ATT'?'nessuna direzione (ATTESA)':ANT_LAB[A.cand])+' · '+A.streak+'/'+ANT_PERSIST+' campioni nuovi consecutivi'}
+  else if(on&&c==='ATT'&&A.cand!=='ATT')n=ANT_LAB[A.cand]+' · '+A.streak+'/'+ANT_PERSIST+' campioni nuovi consecutivi';
+  $('antOld').textContent=o;$('antNew').textContent=n;$('antOld').style.color=on&&c!=='ATT'&&A.cand!==c?'var(--warn)':'';
+}
+function renderAnt(g){
+  const r=g.r,A=g.ant,S=(id,t)=>{$(id).textContent=t},gap=r.dnRaw-r.upRaw;
+  antClear();
+  if(Number.isFinite(gap)&&r.atr>0){const m=Math.abs(gap)/r.atr;S('antGap',sgnFmt(gap,2)+' pp');S('antFav',(gap>0?'SU (più vicino)':gap<0?'GIÙ (più vicino)':'pari')+' · '+fmt(m,2)+' ATR · '+(m<.25?'vantaggio lieve':m<1?'vantaggio moderato':'vantaggio ampio'))}
+  antHist(g.key);antSigHist(g.key);
+  antSigRows(A,g.key);
+  if(!A||A.off){S('antWhy',A?A.why:'—');S('antLight','ATTESA');return}
+  const c=A.conf||'ATT',dir=c==='ATT'?0:c.endsWith('SU')?1:-1,L=$('antLight'),fin=Number.isFinite;
+  const chal=c!=='ATT'&&A.cand!==c;
+  S('antLight',ANT_LAB[c]+(chal?' · IN DISCUSSIONE':''));L.className='mv '+(chal?'fermo':dir>0?'su':dir<0?'giu':'fermo');if(chal||c.startsWith('INV'))L.style.color='var(--warn)';
+  S('antWhy',(chal?'Condizioni attuali: ':'')+A.why+(A.cand!==c&&!chal?' · in conferma: '+ANT_LAB[A.cand]+' ('+A.streak+'/'+ANT_PERSIST+')':'')+(A.cov<.999?' · punteggio su componenti disponibili ('+fmt(A.cov*100,0)+'% dei pesi)':''));
+  const sc=A.score;S('antScore',fin(sc)?sgnFmt(sc,0):'—');$('antScore').className='index-value '+(!fin(sc)?'index-neutral':sc>10?'index-up':sc<-10?'index-down':'index-neutral');
+  A.W.forEach(w=>{
+    S('antV'+w.sec,!w.ok?w.why:'Δ '+sgnFmt(w.d,2)+' · V '+sgnFmt(w.vpm,2)+' pt/min · '+(w.dir>0?'SU guadagna vantaggio':w.dir<0?'GIÙ guadagna vantaggio':'stabile')+' ('+fmt(w.dt,0)+' s effettivi, rumore ±'+fmt(w.T,2)+')');
+    S('antA'+w.sec,!w.ok?w.why:!fin(w.acc)?w.accWhy:'A '+sgnFmt(w.acc,2)+' pt/min² (V '+sgnFmt(w.vpm,2)+' − '+sgnFmt(w.v2,2)+' su '+fmt(w.dm*60,0)+' s, rumore ±'+fmt(w.thA,2)+') · '+(w.accDir>0?'positiva':w.accDir<0?'negativa':'stabile')+(w.spdDir>0?' · velocità in aumento':w.spdDir<0?' · velocità in diminuzione':''))});
+  $('antMacd').style.color=A.msx&&A.msx.loses?'var(--warn)':'';
+  S('antMacdS',Number.isFinite(A.cur.mh)?'barra corrente (in formazione, '+g.interval+') confrontata con la barra precedente (chiusa): istogramma corrente − precedente → '+(A.cur.ms>0?'in aumento':A.cur.ms<0?'in diminuzione':'invariato'):'MACD non disponibile');
+  const mh=A.cur.mh,dv=(A.W[1].ok&&A.W[1].dir)||sgn0(gap);
+  S('antMacd',fin(mh)?'istogramma '+A.msx.txt+' ('+sgnFmt(mh,3)+') · '+(!dv?'nessuna direzione di scarto da confrontare':sgn0(mh)===dv?'CONCORDE con lo scarto '+(dv>0?'SU':'GIÙ'):'DISCORDANZA con lo scarto '+(dv>0?'SU':'GIÙ')):'MACD non disponibile (barre insufficienti)');
+  const PS={FAV:'Scarto favorevole e prezzo favorevole (movimento già in corso)',CONTRO:'Scarto favorevole ma prezzo contrario: divergenza',ANTICIPA:'Scarto anticipatore, senza ancora conferma del prezzo',PERDITA:'Perdita di forza della direzione precedente ('+(A.old&&A.old.dir>0?'SU':'GIÙ')+')',ND:'Conferma del prezzo non valutabile'};
+  S('antPxC',PS[A.ps]);
+  S('antPxD','1 min '+(A.W[1].pxOk?sgnFmt(A.W[1].pxD,2)+' pp':'n.d.')+' · 3 min '+(A.W[2].pxOk?sgnFmt(A.W[2].pxD,2)+' pp':'n.d.'));
+  const raw={pos:sgnFmt(A.cur.gp/A.cur.atr,2)+' ATR',vel:'tanh(Δ/2×rumore), media 30 s/1 min/3 min',acc:'tanh(A/2×rumore)',macd:fin(A.cur.mc)?'rango '+sgnFmt(A.cur.mc,0)+' · pendenza '+sgnFmt(A.cur.ms,0):'n.d.',px:'tanh(Δprezzo/2×rumore), 1 min e 3 min'},id={pos:'antCpos',vel:'antCvel',acc:'antCacc',macd:'antCmacd',px:'antCpx'};
+  for(const k in id)S(id[k],A.C[k]===null?'non disponibile':raw[k]+' → x '+sgnFmt(A.C[k],2)+' · peso '+fmt(A.wt[k]/A.cov*100,0)+'% · contributo '+sgnFmt(A.contrib[k],1));
+}
+$('antReset').addEventListener('click',()=>{if(!confirm('Cancellare lo storico delle previsioni?'))return;antLog=[];antSave();if(lastGood)antHist(lastGood.key)});
+
+// ---------- interfaccia ----------
+const curKey=()=>$('symbol').value.trim().toUpperCase()+'|'+$('interval').value;
+function setStatus(t,warn){$('status').className='status'+(warn?' error':'');$('status').textContent=t}
+const holdText=h=>h.verified?h.k+' · richieste '+HOLD+': '+(h.reached?'sì ✓':'no'):'TENUTA NON VERIFICABILE';
+function sideView(p,dist,hold,c,dir,atr){
+  const set=(k,t)=>{$(p+k).textContent=t};
+  set('Hold',holdText(hold));
+  if(dist===null){set('Dist','—');set('Pct','—');set('Lvl','—');set('State','non calcolabile (ATR nullo o Pace mancante)');return}
+  if(dist===0){set('Dist','Superata');set('Pct','0,00%');set('Lvl','—');set('State','RAGGIUNTA');return}
+  set('Dist',(dir>0?'+':'−')+fmt(dist)+' pp');set('Pct',(dir>0?'+':'−')+fmt(dist/c*100)+'%');set('Lvl',fmt(c+dir*dist));
+  set('State','non raggiunta'+(dist>3*atr?' · stima poco precisa (>3 ATR)':''));
+}
+function renderValues(){
+  const g=lastGood;if(!g)return;
+  const r=g.r,tol=Number($('tol').value);
+  sideView('up',r.up,r.upHold,r.close,1,r.atr);sideView('dn',r.dn,r.dnHold,r.close,-1,r.atr);
+  const cmp=compareSides(r.up,r.dn,r.atr);$('cmpText').textContent=cmp.text;
+  $('cardUp').className='card up'+(cmp.closer==='up'?' closer':'');$('cardDn').className='card down'+(cmp.closer==='dn'?' closer':'');
+  $('price').textContent=fmt(r.close);$('pace').textContent=sgnFmt(r.pace,3);$('atr').textContent=fmt(r.atr,3);
+  const pt=paceTrends(r.pace,r.smPrev,tol);
+  $('pAlg').textContent=pt.alg===null?'—':(TREND_TXT[pt.alg]||'—')+' · Δ '+sgnFmt(pt.dAlg,3)+' (da '+sgnFmt(r.smPrev,3)+' a '+sgnFmt(r.pace,3)+')';
+  $('pAbs').textContent=pt.alg===null?'—':'intensità '+(TREND_TXT[pt.abs]||'—')+' · Δ '+sgnFmt(pt.dAbs,3)+' (da '+fmt(Math.abs(r.smPrev),3)+' a '+fmt(Math.abs(r.pace),3)+')';
+  $('dRef').textContent=g.dRef===null?'—':sgnFmt(g.dRef,3);
+  $('chartTf').textContent=g.cd?'Grafico: sempre 5 minuti (apertura ultima barra '+hms(g.cd.t[g.cd.t.length-1])+', ora italiana) · Indice, Pace e distanze: '+g.interval+(g.interval==='5m'?' (stesso timeframe)':' (timeframe diverso dal grafico)'):'Grafico a 5 minuti non disponibile · Indice, Pace e distanze: '+g.interval;
+  renderCombo(g);renderGap();try{renderSlots()}catch(e){console.error('SLOT',e)}renderMove();try{renderAnt(g)}catch(e){console.error('ANT',e)}try{drawChart()}catch(e){}try{drawNq()}catch(e){}
+}
+function setStale(on){$('vals').className=on?'stale':'';$('chartPanel').classList.toggle('stale',on);$('barsPanel').classList.toggle('stale',on);$('indexPanel').classList.toggle('stale',on);antStaleMark(on)}
+const VALUE_IDS=['shIdeal','shOk','shInv','shStatus','shReb','shEx','shNote','entIdeal','entOk','entInv','entStatus','entReb','entEx','entNote','dMg','comboPush','comboCmp','comboCmp2','dSrc','chartTf','dBars','comboState','comboDir','comboDisc','comboStale','comboIndex','comboDelta','comboMeaning','paceComponent','macdComponent','cGap','cUp','cDn','cMaxUp','cMaxUpT','cMaxDn','cMaxDnT','cMinUp','cMinUpT','cMinDn','cMinDnT','cRun','cRunT','cRunMax','cRunMaxT','cRunMin','cRunMinT','sMin','sNow','sMax','sTxt','sTxt5','wMin','wMinT','wNow','wNowT','wMax','wMaxT','wTxt','wCov','wZone','sTxt15','cNear','cMove','cUpd','upDist','upPct','upLvl','upState','upHold','dnDist','dnPct','dnLvl','dnState','dnHold','cmpText','price','pace','atr','pAlg','pAbs','dRef','mvWhen','mvVerdict','mvUp','mvDn','mvGap','mvStreak','mvSum','dLast','dAge','dState','dLoad','dKind','dKindWhy'];
+// nuova selezione: i valori della selezione precedente non devono restare in pagina
+function clearValues(){
+  VALUE_IDS.forEach(id=>{$(id).textContent='—'});$('comboIndex').className='index-value index-neutral';$('dWarn').textContent='';$('mvHist').textContent='';antClear();$('mvVerdict').className='mv fermo';drawChart();
+  $('dKind').className='';$('dState').className='';$('cardUp').className='card up';$('cardDn').className='card down';setStale(false);
+}
+// aggiornato ogni secondo: età dell'ultima candela e dell'ultimo caricamento riuscito, stato dei dati
+function renderInfo(){
+  const g=lastGood,now=Date.now(),kn=kindNow(g,now);
+  if(kn.k){const K=KIND[kn.k];$('dKind').textContent=K.t;$('dKind').className=K.cls;$('dKindWhy').textContent=kn.d||K.d}
+  $('mgTag').textContent='';
+  if(!g){setStale(false);if(failed)$('dWarn').textContent='⚠ nessun valore valido disponibile per questa selezione.';return}
+  updUpd(g,now);
+  const st=dataStatus(g.last.time,g.reg,g.interval,now),mismatch=g.key!==curKey();
+  $('dLast').textContent=hmsDay(g.last.time)+' · '+g.symbol+' '+g.interval;
+  $('dAge').textContent=fmtAge(now-g.last.time);
+  $('dState').textContent=(st.cls==='ok'?'entro i limiti':st.cls==='late'?'oltre i limiti':'non verificabile')+' ('+st.why+')';$('dState').className=st.cls;
+  $('dLoad').textContent=hms(g.loadedAt)+' ('+fmtAge(now-g.loadedAt)+' fa) · '+g.n+' barre'+(g.dups?' · '+g.dups+' duplicati scartati':'');
+  $('dBars').textContent=g.n+' scaricate · Pace: '+(g.n>=MINBARS?'sufficienti (min '+MINBARS+')'+(g.n<PACE_STAB?', ATR in assestamento sotto '+PACE_STAB:''):'mancano '+(MINBARS-g.n))+' · Indice: '+(g.n>=IDXNEED?'sufficienti':'mancano '+(IDXNEED-g.n))+' (min '+IDXNEED+')';
+  const sr=g.src;$('dSrc').textContent=sr?(RANGE_ALT[g.interval]?'estesa '+RANGE_ALT[g.interval]+': '+(sr.ext!==null?sr.ext+' barre valide':'fallita ('+sr.extErr+')')+' · standard '+RANGE[g.interval]+': '+(sr.std!==null?sr.std+' barre valide':sr.stdErr?'fallita ('+sr.stdErr+')':'non richiesta')+' · usata: '+sr.used:'standard '+RANGE[g.interval]+': '+g.n+' barre valide'):'—';
+  {const q=g.r&&g.r.mgQ,D=$('dMg');D.textContent=q?q.txt:'—';D.className=q?(q.kind==='completo'?'ok':q.kind==='ricostruito'?'late':'unk'):'';$('mgTag').textContent=q&&q.kind!=='completo'?'· '+q.kind.toUpperCase():''}
+  const w=[];
+  if(failed)w.push('⚠ ultimo caricamento fallito ('+failed.msg+'): i valori mostrati hanno '+fmtAge(now-g.loadedAt)+'.');
+  if(olderNote)w.push('⚠ '+olderNote+'.');
+  if(mismatch)w.push('⚠ i valori sono di '+g.symbol+' '+g.interval+', non della selezione attuale.');
+  if(st.cls==='late')w.push('⚠ dati ritardati: non trattarli come aggiornati.');
+  if(st.cls==='unk')w.push('⚠ attualità non verificabile ('+st.why+'): valori non confermati come aggiornati, esclusi dallo storico dei confronti.');
+  const kept=isKept(g,now);if(kept)w.push('⚠ valori conservati: ultimo aggiornamento riuscito '+fmtAge(now-g.loadedAt)+' fa.');
+  $('dWarn').textContent=w.join(' ');
+  const sl=failed||olderNote||mismatch||kept||st.cls==='late';$('comboStale').textContent=sl?'⚠ INDICE NON AGGIORNATO: ultimo valore valido di '+hms(g.loadedAt)+' (ora italiana), '+fmtAge(now-g.loadedAt)+' fa':st.cls==='unk'?'⚠ ATTUALITÀ NON VERIFICABILE ('+st.why+'): indice mostrato ma non confermato come aggiornato (ultimo caricamento '+hms(g.loadedAt)+')':'';
+  setStale(!!(failed||olderNote||mismatch||kept||st.cls==='late'));
+}
+async function load(){
+  clearTimeout(timer);
+  if(controller)controller.abort();           // una sola richiesta alla volta: la precedente viene annullata e scartata
+  controller=new AbortController();const signal=controller.signal;
+  const key=curKey();started=true;busy=true;
+  if(!lastGood)setStatus('Caricamento dati…');
+  $('load').disabled=true;
+  try{
+    const [symbol,interval]=key.split('|');
+    const bars=await loadBars(signal,interval,symbol);if(signal.aborted)return;
+    // scarto minuto dopo minuto: scarico le barre da 1 minuto (al massimo una volta al minuto) e calcolo i minuti completi non ancora in cache
+    let mg=null;
+    if(bars.reg&&interval!=='1d'){
+      const mk=key+'|'+bars.reg.start;if(!mgCache||mgCache.k!==mk)mgCache={k:mk,list:[],last:0,fm:0};
+      const nowM=Math.floor(Date.now()/60000);
+      if(mgCache.fm!==nowM){
+        try{
+          const mb=interval==='1m'?bars:await fetchBars(signal,'1m',symbol);if(signal.aborted)return;lastMb=mb;
+          const add=minuteGaps(bars,mb,STEP[interval]*1000,bars.reg,mgCache.last,Date.now());
+          if(add.length){mgCache.list=mgCache.list.concat(add);mgCache.last=add[add.length-1].t}
+          mgCache.fm=nowM;
+        }catch(e){if(signal.aborted)return}
+      }
+      if(mgCache.list.length)mg=mgCache.list;
+    }
+    const exLast=!mg&&!!(bars.reg&&Date.now()<bars.reg.end); // senza dati al minuto: ripiego su chiusura barre + campione corrente ogni minuto
+    const r=analyze(bars,exLast,mg);if(!r)throw new Error('dati insufficienti');
+    let cbars=bars;if(key.split('|')[1]!=='5m'){try{cbars=await fetchBars(signal,'5m',symbol)}catch(e){if(signal.aborted)return;cbars=null}if(signal.aborted)return}
+    const L=bars[bars.length-1],last={time:L.time,open:L.open,high:L.high,low:L.low,close:L.close};
+    const kind=classify(lastGood,key,last);
+    if(kind==='older'){ // mai sovrascrivere dati più recenti con una risposta più vecchia
+      olderNote='Yahoo ha restituito una candela più vecchia ('+hmsDay(last.time)+') di quella già mostrata: risposta scartata';failed=null;
+      setStatus(olderNote,true);renderInfo();return;
+    }
+    const now=Date.now(),okAge=p=>p&&p.key===key&&(now-p.at)/1000<=MAXCMP[interval],dst=dataStatus(last.time,bars.reg,interval,now),fresh=dst.cls==='ok'; // solo dati confermati attuali alimentano i riferimenti: ritardati e non verificabili no
+    const dRef=fresh&&okAge(prevMeas)&&Number.isFinite(r.pace)&&Number.isFinite(prevMeas.sm)?r.pace-prevMeas.sm:null;
+    r.idxCmp=fresh?indexCompare(idxHist,key,r.comboIndex,last.time,now,{prevBar:bars.length>1?bars[bars.length-2].time:null,step:STEP[interval]*1000}):{late:true,why:dst.cls==='late'?'dati ritardati':'attualità non verificabile'};
+    if(fresh&&Number.isFinite(r.pace))prevMeas={key,sm:r.pace,at:now};
+    if(fresh&&Number.isFinite(r.comboIndex))idxHist=pushIdx(idxHist,key,r.comboIndex,last.time,now); // riferimenti aggiornati solo da misurazioni valide e non ritardate
+    let antRes;try{antRes=antStep(key,r,last,bars.reg,now,fresh,Number($('mvTol').value),bars.qt)}catch(e){console.error('ANT',e);antRes={off:true,why:'Errore interno nel calcolo predittivo: nessun segnale.'}}
+    const gn=Number.isFinite(r.upRaw)&&Number.isFinite(r.dnRaw)?r.dnRaw-r.upRaw:NaN;
+    let tm=null; // minuto del campione dal vivo (null = nessun campione in questo giro)
+    if(bars.reg){const sk=key+'|'+bars.reg.start;if(!sessAcc||sessAcc.k!==sk)sessAcc={k:sk,max:null,min:null,minUp:null,maxDn:null,lm:null,bmax:null,bmin:null,bminUp:null,bmaxDn:null};
+      if(r.sMax&&(!sessAcc.max||r.sMax.v>sessAcc.max.v))sessAcc.max=r.sMax;
+      if(r.sMin&&(!sessAcc.min||r.sMin.v<sessAcc.min.v))sessAcc.min=r.sMin;
+      if(r.sMinUp&&(!sessAcc.minUp||r.sMinUp.v<sessAcc.minUp.v))sessAcc.minUp=r.sMinUp;
+      if(r.sMaxDn&&(!sessAcc.maxDn||r.sMaxDn.v>sessAcc.maxDn.v))sessAcc.maxDn=r.sMaxDn;
+      // a chiusura barra (come prima): ricostruzione + scarto corrente a ogni aggiornamento, con l'orario della barra
+      if(r.bMax&&(!sessAcc.bmax||r.bMax.v>sessAcc.bmax.v))sessAcc.bmax=r.bMax;
+      if(r.bMin&&(!sessAcc.bmin||r.bMin.v<sessAcc.bmin.v))sessAcc.bmin=r.bMin;
+      if(r.bMinUp&&(!sessAcc.bminUp||r.bMinUp.v<sessAcc.bminUp.v))sessAcc.bminUp=r.bMinUp;
+      if(r.bMaxDn&&(!sessAcc.bmaxDn||r.bMaxDn.v>sessAcc.bmaxDn.v))sessAcc.bmaxDn=r.bMaxDn;
+      const inSess=now>=bars.reg.start&&now<bars.reg.end&&L.time>=bars.reg.start; // niente campioni prima dell'apertura: lo scarto di prima è dell'ultima candela della sessione precedente
+      if(Number.isFinite(gn)&&inSess){const tb=L.time;
+        if(!sessAcc.bmax||gn>sessAcc.bmax.v)sessAcc.bmax={v:gn,t:tb};if(!sessAcc.bmin||gn<sessAcc.bmin.v)sessAcc.bmin={v:gn,t:tb};
+        if(gn>0&&(!sessAcc.bminUp||gn<sessAcc.bminUp.v))sessAcc.bminUp={v:gn,t:tb};if(gn<0&&(!sessAcc.bmaxDn||gn>sessAcc.bmaxDn.v))sessAcc.bmaxDn={v:gn,t:tb}}
+      // scarto corrente: entra nei max/min una sola volta al minuto (al primo aggiornamento del minuto), con l'orario di quel minuto
+      if(exLast&&inSess&&Number.isFinite(gn)){const lm=Math.floor(now/60000);
+        if(sessAcc.lm!==lm){sessAcc.lm=lm;tm=lm*60000;
+          if(!sessAcc.max||gn>sessAcc.max.v)sessAcc.max={v:gn,t:tm};if(!sessAcc.min||gn<sessAcc.min.v)sessAcc.min={v:gn,t:tm};
+          if(gn>0&&(!sessAcc.minUp||gn<sessAcc.minUp.v))sessAcc.minUp={v:gn,t:tm};if(gn<0&&(!sessAcc.maxDn||gn>sessAcc.maxDn.v))sessAcc.maxDn={v:gn,t:tm}}}}
+    else sessAcc=null;
+    const rkey=bars.reg?key+'|'+bars.reg.start:null;
+    if(rkey){
+      let R=r.run?{sg:r.run.sg,t0:r.run.t0,c0:r.run.c0,g0:r.run.g0,mx:r.run.mx,mn:r.run.mn}:null;
+      if(runAcc&&runAcc.k===rkey){
+        if(R&&R.sg===runAcc.sg){ // stessa serie già vista: tengo l'inizio più vecchio e gli estremi visti dal vivo
+          if(runAcc.t0<R.t0){R.t0=runAcc.t0;R.c0=runAcc.c0;R.g0=runAcc.g0}if(Math.abs(runAcc.mx.v)>Math.abs(R.mx.v))R.mx=runAcc.mx;if(Math.abs(runAcc.mn.v)<Math.abs(R.mn.v))R.mn=runAcc.mn}
+        else if(!R||runAcc.t0>R.t0)R={sg:runAcc.sg,t0:runAcc.t0,c0:runAcc.c0,g0:runAcc.g0,mx:runAcc.mx,mn:runAcc.mn}; // serie nata da un campione dal vivo, più recente della ricostruzione
+      }
+      if(tm!==null&&Number.isFinite(gn)){const sg=gn>0?1:gn<0?-1:0;
+        if(!R||R.sg!==sg)R={sg,t0:tm,c0:r.close,g0:gn,mx:{v:gn,t:tm},mn:{v:gn,t:tm}};
+        else{if(Math.abs(gn)>Math.abs(R.mx.v))R.mx={v:gn,t:tm};if(Math.abs(gn)<Math.abs(R.mn.v))R.mn={v:gn,t:tm}}}
+      runAcc=R?{k:rkey,sg:R.sg,t0:R.t0,c0:R.c0,g0:R.g0,mx:R.mx,mn:R.mn}:null;
+    }else runAcc=null;
+    const cur={run:runAcc,sess:sessAcc?{max:sessAcc.max,min:sessAcc.min,minUp:sessAcc.minUp,maxDn:sessAcc.maxDn,bmax:sessAcc.bmax,bmin:sessAcc.bmin,bminUp:sessAcc.bminUp,bmaxDn:sessAcc.bmaxDn}:null,key,symbol,interval,r,dRef,kind,last,reg:bars.reg,regEnd:bars.regReg?bars.regReg.end:null,src:bars.src,n:bars.length,dups:bars.dups,loadedAt:now,ant:antRes};
+    const prevG=lastGood&&lastGood.key===key?lastGood:null,move=moveStep(prevG,cur,Number($('mvTol').value));
+    let nq=null,nqErr=false;try{nq=await fetchSpark(signal,NQSYM)}catch(e){if(signal.aborted)return;nqErr=true}
+    cur.nq=nq;cur.nqErr=nqErr;
+    {const src=(lastMb&&lastMb.length?lastMb:cbars)||null,w=src===lastMb?60000:300000; // stessa fonte per «ora» e «fa»: include anche le barre fuori sessione
+      const px=min=>{const ref=Date.now()-min*60000;let c=null;
+        if(src)for(let k=src.length-1;k>=0;k--)if(src[k].time+w<=ref){c=src[k].close;break}
+        return [c,ref]};
+      cur.cNow=src&&src.length?src[src.length-1].close:null;
+      cur.winOk=src===lastMb;cur.winZ=src?src.filter(b=>b.time>=(bars.reg?bars.reg.start:Date.now()-ZONE_MIN*60000)).map(b=>({c:b.close,t:b.time})):[];cur.winMg=mg?mg:null;
+      [cur.c5,cur.t5]=px(5);[cur.c15,cur.t15]=px(15)}
+cur.cd=cbars?chartData(cbars):null;cur.move=move;cur.hist=(prevG?prevG.hist:[]).slice();
+    // storico dall'apertura della borsa: al primo caricamento (o dopo un cambio di simbolo/timeframe) lo riempio con i minuti già trascorsi della sessione (dati reali a 1 minuto di Yahoo), non solo con gli aggiornamenti visti dopo l'apertura del sito
+    if(!prevG&&mg&&mg.length>1&&r.atr>0){const tol=Number($('mvTol').value)*r.atr,seed=[];
+      for(let k=1;k<mg.length;k++){const dGap=mg[k].gp-mg[k-1].gp,v=dGap>tol+1e-9?'su':dGap<-tol-1e-9?'giu':'fermo';seed.push({v,dt:60,dGap,gap:mg[k].gp,tol,seed:true})}
+      cur.hist=seed.concat(cur.hist)}
+    if(move)cur.hist.push(move);if(cur.hist.length>HISTSTORE)cur.hist=cur.hist.slice(-HISTSTORE);
+    lastGood=cur;failed=null;olderNote=null;
+    renderValues();renderInfo();setStatus('Richiesta HTTP riuscita alle '+hms(Date.now())+' (ora italiana): non conferma che i dati siano attuali, vedi «Stato dati».');
+  }catch(e){
+    if(signal.aborted)return;
+    const msg=e?.message||String(e);failed={msg,at:Date.now(),insufficient:!!e?.insufficient};
+    setStatus((e?.insufficient?'':'Errore: ')+msg+(!stopped&&Number($('refresh').value)>0?' — riprovo tra '+$('refresh').value+' s':'')+(lastGood?' · mostro gli ultimi valori validi':''),true);
+    renderInfo();
+  }finally{
+    if(controller&&controller.signal===signal){busy=false;$('load').disabled=false;schedule()}
+  }
+}
+function schedule(){
+  clearTimeout(timer);const sec=Number($('refresh').value);
+  if(!stopped&&sec>0&&!document.hidden)timer=setTimeout(load,sec*1000);
+}
+function resetSelection(){
+  clearTimeout(timer);if(controller)controller.abort();controller=null;busy=false;$('load').disabled=false;
+  lastGood=null;failed=null;olderNote=null;prevMeas=null;idxHist=null;sessAcc=null;runAcc=null;mgCache=null;antReset();clearValues();
+}
+$('load').addEventListener('click',()=>{stopped=false;load()});
+$('stop').addEventListener('click',()=>{stopped=true;clearTimeout(timer);if(controller)controller.abort();controller=null;busy=false;$('load').disabled=false;setStatus('Aggiornamento automatico fermato: i valori mostrati sono quelli dell\'ultimo caricamento riuscito.')});
+$('refresh').addEventListener('change',()=>{stopped=false;schedule()});
+$('tol').addEventListener('change',renderValues);
+$('mvTol').addEventListener('change',()=>{const g=lastGood;if(!g||!g.move||g.move.v==='skip'){return}const t=Number($('mvTol').value)*g.r.atr,m=g.move;m.tol=t;m.v=m.dGap>t+1e-9?'su':m.dGap<-t-1e-9?'giu':'fermo';g.hist[g.hist.length-1]=m;renderMove()});
+const onInput=()=>{resetSelection();if(!stopped)load();else setStatus('Selezione cambiata: premi “Carica dati”.')};
+$('interval').addEventListener('change',onInput);$('symbol').addEventListener('change',onInput);
+// ritorno in primo piano (anche da cache iOS): ricalcola subito le età e, se serve, ricarica
+function resume(){
+  renderInfo();
+  if(!stopped&&started&&!document.hidden&&(Number($('refresh').value)>0||needsReload)){needsReload=false;load()}
+}
+document.addEventListener('visibilitychange',()=>{
+  if(document.hidden){needsReload=busy;clearTimeout(timer);if(controller)controller.abort();controller=null;busy=false;$('load').disabled=false}
+  else resume();
+});
+window.addEventListener('pageshow',e=>{if(e.persisted)resume()});
+$('ver').textContent=VERSION;try{antSigHist(curKey())}catch(e){}
+setInterval(renderInfo,1000);
+load(); // carica subito all'apertura: il pulsante serve solo per un ricaricamento manuale
+</script>
+</body>
+</html>
